@@ -1,0 +1,15 @@
+{
+    "projectName": "FrameWebWriterTool",
+    "languages": [{
+        "id": "frame-web-writer-tool",
+        "grammar": "src/language/frame-web-writer-tool.langium",
+        "fileExtensions": [".fwt"],
+        "textMate": {
+            "out": "syntaxes/frame-web-writer-tool.tmLanguage.json"
+        },
+        "monarch": {
+            "out": "src/syntaxes/frame-web-writer-tool.monarch.ts"
+        }
+    }],
+    "out": "src/language/generated"
+}
