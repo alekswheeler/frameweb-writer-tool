@@ -1,0 +1,8 @@
+ApplicationTier:
+
+    Class Car:
+        name: string,
+        type: string,
+
+    Class Person
+        name: string

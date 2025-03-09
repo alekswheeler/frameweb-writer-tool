@@ -1,0 +1,6 @@
+Application
+
+    Class Car:
+        owner: string,
+
+
