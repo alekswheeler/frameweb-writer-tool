@@ -1,8 +1,9 @@
 ApplicationTier:
+    Entities
+        Class Car:
+            name: string,
+            type: string,
 
-    Class Car:
-        name: string,
-        type: string,
-
-    Class Person
-        name: string
+        Class Person
+            name: string
+    Controllers

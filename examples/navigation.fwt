@@ -1,6 +1,4 @@
 Application
 
-    Class Car:
-        owner: string,
-
-
+	Class Car:
+		jhon: string
