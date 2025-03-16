@@ -1,4 +1,4 @@
-import type { ValidationAcceptor, ValidationChecks } from 'langium';
+import { type ValidationAcceptor, type ValidationChecks } from 'langium';
 import { AttributesBlock, ClassDef, FrameWebWriterToolAstType} from './generated/ast.js';
 import type { FrameWebWriterToolServices } from './frame-web-writer-tool-module.js';
 
@@ -10,6 +10,7 @@ export function registerValidationChecks(services: FrameWebWriterToolServices) {
     const validator = services.validation.FrameWebWriterToolValidator;
     const checks: ValidationChecks<FrameWebWriterToolAstType> = {
         ClassDef: [validator.checkClassIndentation, validator.checkClassStartsWithCapital],
+        AttributesBlock: validator.checkAttributeIndentation
     };
     registry.register(checks, validator);
 }
@@ -18,6 +19,12 @@ export function registerValidationChecks(services: FrameWebWriterToolServices) {
  * Implementation of custom validations.
  */
 export class FrameWebWriterToolValidator {
+
+    static countLeadingTabs(text: string): number {
+        const match = text.match(/^\t+/); // Captura apenas TABs no início
+        return match ? match[0].length : 0;
+    }
+    
 
     checkClassStartsWithCapital(classDef: ClassDef, accept: ValidationAcceptor): void {
         if (classDef.name) {
@@ -40,27 +47,28 @@ export class FrameWebWriterToolValidator {
             });
         }
     }
-    
-    //todo verificar o nível que o node pai está para validar se ele está no nível correto
-    // Valida se os atributos da classe possuem tabulação correta
-    checkAttributeIndentation(attribute: AttributesBlock, accept: ValidationAcceptor, level: number): void {
 
-        attribute.attributes.forEach(x => {
-            console.debug(`[${x.$cstNode?.text}]`)
-            const text = x.$cstNode?.text;
-            
-            if (text) {
-                const match = text.match(/^\t+/);
-                let tabs = match ? match[0].length : 0;
-                if(tabs <= level){
-                    accept('error', 'Os atributos devem ser indentados com tabulação.', {
-                        node: attribute,
+    checkAttributeIndentation(attributeBlock: AttributesBlock, accept: ValidationAcceptor): void {
+        const classText = attributeBlock.$cstNode?.text ?? "";
+        const classIndentation = FrameWebWriterToolValidator.countLeadingTabs(classText); // TABs antes da 'Class'
+        
+        if (attributeBlock.$cstNode) {
+            for (const attr of attributeBlock.attributes) {
+                const attrText = attr.$cstNode?.text ?? "";
+                const attrIndentation = FrameWebWriterToolValidator.countLeadingTabs(attrText); // TABs antes do atributo
+    
+                console.debug(`Class "${attributeBlock.name}" tem ${classIndentation} TABs.`);
+                console.debug(`Atributo "${attr.name}" tem ${attrIndentation} TABs.`);
+    
+                if (attrIndentation <= classIndentation) {
+                    accept('error', 'Os atributos devem estar pelo menos um nível mais indentados que a classe.', {
+                        node: attr,
                         property: 'name'
                     });
                 }
             }
-        });
-        
+        }
     }
+    
 
 }

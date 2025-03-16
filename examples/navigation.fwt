@@ -1,4 +1,4 @@
 Application
-
 	Class Car:
-		jhon: string
+		owner: Person
+		color: string
