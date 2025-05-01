@@ -7,7 +7,7 @@ Stmt: Tier; //| (Tier | Model);
 Tier: (AppTier | NaviTier | PersTier);
 
 AppTier:
-    'Application' NL classes+=ClassDef*;
+    'Application' NL+ classes+=ClassDef*;
 
 NaviTier:
     'Navigation' classes+=ClassDef;
@@ -15,13 +15,15 @@ NaviTier:
 PersTier:
     'Persistence' classes+=ClassDef;
 
+// ==================================
+
 Model: (Package | ClassDef);
 
 Package:
     'Page' name=ID;
 
 ClassDef:
-    TAB? 'Class' name=ID ':' NL AttributesBlock?;
+    TAB? 'Class' name=ID ':' (NL | NL TAB)* AttributesBlock?;
 
 AttributesBlock: attributes+=Attribute+;
 

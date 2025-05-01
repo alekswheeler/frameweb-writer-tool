@@ -57,9 +57,13 @@ export class FrameWebWriterToolValidator {
                 const attrText = attr.$cstNode?.text ?? "";
                 const attrIndentation = FrameWebWriterToolValidator.countLeadingTabs(attrText); // TABs antes do atributo
     
-                console.debug(`Class "${attributeBlock.name}" tem ${classIndentation} TABs.`);
-                console.debug(`Atributo "${attr.name}" tem ${attrIndentation} TABs.`);
-    
+                if(attr.name === undefined || attr.name.length === 0){
+                    continue;
+                }
+                // console.debug(`Class "${attributeBlock.name}" tem ${classIndentation} TABs.`);
+                // console.debug(`Atributo "${attr.name}" tem ${attrIndentation} TABs.`);
+                // console.debug(`\n=========\n`);
+
                 if (attrIndentation <= classIndentation) {
                     accept('error', 'Os atributos devem estar pelo menos um nível mais indentados que a classe.', {
                         node: attr,
