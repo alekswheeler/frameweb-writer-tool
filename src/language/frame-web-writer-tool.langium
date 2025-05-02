@@ -6,8 +6,11 @@ Stmt: Tier; //| (Tier | Model);
 
 Tier: (AppTier | NaviTier | PersTier);
 
+// AppTier:
+//     'Application' NL+ classes+=ClassDef*;
+
 AppTier:
-    'Application' NL+ classes+=ClassDef*;
+    'Application' NL+ classes+=ClassDef+;
 
 NaviTier:
     'Navigation' classes+=ClassDef;
@@ -23,12 +26,26 @@ Package:
     'Page' name=ID;
 
 ClassDef:
-    TAB? 'Class' name=ID ':' (NL | NL TAB)* AttributesBlock?;
+    NL* TAB* 'Class' name=ID ':' (NL | NL TAB)* AttributesBlock?;
 
-AttributesBlock: attributes+=Attribute+;
+AttributesBlock:
+    (NL TAB+ attributes+=Attribute)+ NL*;
 
 Attribute:
-    TAB? name=ID ':' type=ID (NL)*;
+    name=ID ':' type=TypeRef;
+
+TypeRef:
+    PrimitiveType | CustomType;
+
+PrimitiveType:
+    type=('number' | 'string' | 'bool');
+
+CustomType:
+    type=[ClassDef : QualifiedName];
+
+QualifiedName returns string:
+    ID ('.' ID)*;
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

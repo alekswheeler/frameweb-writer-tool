@@ -52,7 +52,11 @@ export class FrameWebWriterToolValidator {
         const classText = attributeBlock.$cstNode?.text ?? "";
         const classIndentation = FrameWebWriterToolValidator.countLeadingTabs(classText); // TABs antes da 'Class'
         
+
         if (attributeBlock.$cstNode) {
+            console.debug(classText);
+
+            console.debug(`Class "${attributeBlock.name}" tem ${classIndentation} TABs.`);
             for (const attr of attributeBlock.attributes) {
                 const attrText = attr.$cstNode?.text ?? "";
                 const attrIndentation = FrameWebWriterToolValidator.countLeadingTabs(attrText); // TABs antes do atributo
@@ -60,17 +64,16 @@ export class FrameWebWriterToolValidator {
                 if(attr.name === undefined || attr.name.length === 0){
                     continue;
                 }
-                // console.debug(`Class "${attributeBlock.name}" tem ${classIndentation} TABs.`);
-                // console.debug(`Atributo "${attr.name}" tem ${attrIndentation} TABs.`);
-                // console.debug(`\n=========\n`);
+                console.debug(`Atributo "${attr.name}" tem ${attrIndentation} TABs.`);
 
-                if (attrIndentation <= classIndentation) {
-                    accept('error', 'Os atributos devem estar pelo menos um nível mais indentados que a classe.', {
-                        node: attr,
-                        property: 'name'
-                    });
-                }
+                // if (attrIndentation <= classIndentation) {
+                //     accept('error', 'Os atributos devem estar pelo menos um nível mais indentados que a classe.', {
+                //         node: attr,
+                //         property: 'name'
+                //     });
+                // }
             }
+            console.debug(`\n=========\n`);
         }
     }
     
