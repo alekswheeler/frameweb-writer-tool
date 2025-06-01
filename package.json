@@ -85,9 +85,6 @@
             }
         ]
     },
-    "activationEvents": [
-        "onLanguage:frame-web-writer-tool"
-    ],
     "main": "./out/extension/main.cjs",
     "bin": {
         "frame-web-writer-tool-cli": "./bin/cli.js"

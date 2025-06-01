@@ -10,7 +10,7 @@ Tier: (AppTier | NaviTier | PersTier);
 //     'Application' NL+ classes+=ClassDef*;
 
 AppTier:
-    'Application' NL+ classes+=ClassDef+;
+    'Application' NL* classes+=ClassDef+;
 
 NaviTier:
     'Navigation' classes+=ClassDef;
@@ -29,10 +29,10 @@ ClassDef:
     NL* TAB* 'Class' name=ID ':' (NL | NL TAB)* AttributesBlock?;
 
 AttributesBlock:
-    (NL TAB+ attributes+=Attribute)+ NL*;
+    (NL attributes+=Attribute)+ NL*;
 
 Attribute:
-    name=ID ':' type=TypeRef;
+    TAB+ name=ID ':' type=TypeRef;
 
 TypeRef:
     PrimitiveType | CustomType;
