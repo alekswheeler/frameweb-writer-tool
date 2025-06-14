@@ -40,13 +40,19 @@ TypeRef:
 RelationDefinition: 
     Type name=ID '{' 
         RelationBlock? 
+    '}' | 
+    'Inheritance' '{' 
+        InheritanceRelation
     '}';
 
 RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=QualifiedName '->' to=QualifiedName '[' (INT|'*') '..' (INT|'*')  ']';
+	from=QualifiedName ('->' | '--') to=QualifiedName '[' (INT|'*') '..' (INT|'*')  ']';
+
+InheritanceRelation: 
+	from=QualifiedName ('->' | 'extends') to=QualifiedName;
 
 Type:
     type='Association' | 'Agregation' | 'Composition';
