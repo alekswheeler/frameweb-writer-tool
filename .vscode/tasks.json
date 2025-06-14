@@ -4,18 +4,34 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build frame-web-writer-tool",
-            "command": "npm run langium:generate && npm run build",
+            "label": "generate",
+            "command": "npm run langium:generate",
             "type": "shell",
-            "group": {
-                "kind": "build",
-                "isDefault": true
+            "detail": "Langium: Generate grammar and build the frame-web-writer-tool language",
+            "icon": {
+                "color": "terminal.ansiGreen",
+                "id": "server-process"
             },
+        },
+        {
+            "label": "build",
+            "command": "npm run build",
+            "type": "shell",
             "detail": "Langium: Generate grammar and build the frame-web-writer-tool language",
             "icon": {
                 "color": "terminal.ansiGreen",
                 "id": "server-process"
             }
+        },
+        {
+            "label": "prepare",
+            "dependsOn": ["generate", "build"],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Langium: Generate grammar and build the frame-web-writer-tool language",
         }
     ]
 }
