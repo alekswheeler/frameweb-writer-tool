@@ -1,30 +1,32 @@
-import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wrapper';
-import { configureWorker, defineUserServices } from './setupCommon.js';
-import monarchSyntax from "./syntaxes/frame-web-writer-tool.monarch.js";
+//TODO Configurar o monaco-wrap-editor para a nova versão
 
-export const setupConfigClassic = (): UserConfig => {
-    return {
-        wrapperConfig: {
-            serviceConfig: defineUserServices(),
-            editorAppConfig: {
-                $type: 'classic',
-                languageId: 'frame-web-writer-tool',
-                code: `// Frame Web Writer Tool is running in the web!`,
-                useDiffEditor: false,
-                languageExtensionConfig: { id: 'langium' },
-                languageDef: monarchSyntax,
-                editorOptions: {
-                    'semanticHighlighting.enabled': true,
-                    theme: 'vs-dark'
-                }
-            }
-        },
-        languageClientConfig: configureWorker()
-    };
-};
+// import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wrapper';
+// import { configureWorker, defineUserServices } from './setupCommon.js';
+// import monarchSyntax from "./syntaxes/frame-web-writer-tool.monarch.js";
 
-export const executeClassic = async (htmlElement: HTMLElement) => {
-    const userConfig = setupConfigClassic();
-    const wrapper = new MonacoEditorLanguageClientWrapper();
-    await wrapper.initAndStart(userConfig, htmlElement);
-};
+// export const setupConfigClassic = (): UserConfig => {
+//     return {
+//         wrapperConfig: {
+//             serviceConfig: defineUserServices(),
+//             editorAppConfig: {
+//                 $type: 'classic',
+//                 languageId: 'frame-web-writer-tool',
+//                 code: `// Frame Web Writer Tool is running in the web!`,
+//                 useDiffEditor: false,
+//                 languageExtensionConfig: { id: 'langium' },
+//                 languageDef: monarchSyntax,
+//                 editorOptions: {
+//                     'semanticHighlighting.enabled': true,
+//                     theme: 'vs-dark'
+//                 }
+//             }
+//         },
+//         languageClientConfig: configureWorker()
+//     };
+// };
+
+// export const executeClassic = async (htmlElement: HTMLElement) => {
+//     const userConfig = setupConfigClassic();
+//     const wrapper = new MonacoEditorLanguageClientWrapper();
+//     await wrapper.initAndStart(userConfig, htmlElement);
+// };
