@@ -9,6 +9,7 @@
     ],
     "type": "module",
     "scripts": {
+        "prep": "langium generate && npm run build", 
         "build": "tsc -b tsconfig.src.json && node esbuild.mjs",
         "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.src.json --watch\" \"node esbuild.mjs --watch\"",
         "lint": "eslint src --ext ts",
@@ -84,9 +85,6 @@
             }
         ]
     },
-    "activationEvents": [
-        "onLanguage:frame-web-writer-tool"
-    ],
     "main": "./out/extension/main.cjs",
     "bin": {
         "frame-web-writer-tool-cli": "./bin/cli.js"
