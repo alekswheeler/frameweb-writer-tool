@@ -1,0 +1,13 @@
+Application
+
+    /*
+		pt:
+		en:
+	*/
+	Class Person:
+		name: string
+		age: number
+
+	Class Car:
+		owner: Person
+		color: string
