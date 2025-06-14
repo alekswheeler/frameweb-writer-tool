@@ -4,19 +4,26 @@ entry Program: (stmts+=Stmt)*;
 
 Stmt: Tier;
 
-Tier: (NaviTier | AppTier);
+Tier: (PackageDeclaration);
 
-AppTier:
-    'Application' '{' 
+PackageDeclaration:
+    'Package' name=QualifiedName '{'
         classes+=ClassDef*
         relations+=RelationDefinition*
     '}';
 
-NaviTier:
-    'Navigation' classes+=ClassDef;
 
-PersTier:
-    'Persistence' classes+=ClassDef;
+// AppTier:
+//     'Application' '{' 
+//         classes+=ClassDef*
+//         relations+=RelationDefinition*
+//     '}';
+
+// NaviTier:
+//     'Navigation' classes+=ClassDef;
+
+// PersTier:
+//     'Persistence' classes+=ClassDef;
 
 // ==================================
 
@@ -51,7 +58,7 @@ RelationBlock:
 Relation: 
 	from=QualifiedName ('->' | '--') to=QualifiedName '[' (INT|'*') '..' (INT|'*')  ']';
 
-InheritanceRelation: 
+InheritanceRelation:
 	from=QualifiedName ('->' | 'extends') to=QualifiedName;
 
 Type:
