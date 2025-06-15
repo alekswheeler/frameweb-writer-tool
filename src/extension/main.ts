@@ -1,9 +1,77 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import * as path from 'node:path';
+import * as fs from 'fs';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
+import { NodeFileSystem } from 'langium/node';
+import { createFrameWebWriterToolServices } from '../language/frame-web-writer-tool-module.js';
+import { Program } from '../language/generated/ast.js';
+import { extractAstNode, extractDestinationAndName } from '../cli/cli-util.js';
+import { generateMermaidMd } from '../cli/generator.js';
 
 let client: LanguageClient;
+
+function getMermaidHtml(content: string): string {
+    // Extração do bloco mermaid do .md (caso ele esteja dentro de ```mermaid ... ```)
+    const mermaidRegex = /```mermaid\s*([\s\S]*?)```/gm;
+    const match = mermaidRegex.exec(content);
+    const diagramCode = match ? match[1].trim() : content.trim();
+
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mermaid Preview</title>
+        <script type="module">
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+    </head>
+    <body>
+        <div class="mermaid">
+            ${diagramCode}
+        </div>
+    </body>
+    </html>
+    `;
+}
+
+function getMermaidHtml2(content: string, mermaidJsUri: vscode.Uri): string {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <script src="${mermaidJsUri}"></script>
+            <script>
+                mermaid.initialize({ startOnLoad: true });
+            </script>
+        </head>
+        <body>
+            <div class="mermaid">
+                ${content}
+            </div>
+        </body>
+        </html>
+    `;
+}
+
+export async function showMermaidPreview(mdFilePath: string) {
+    const mermaidContent = fs.readFileSync(mdFilePath, 'utf-8');
+
+    const panel = vscode.window.createWebviewPanel(
+        'mermaidPreview',
+        'Mermaid Diagram Preview',
+        vscode.ViewColumn.Beside,
+        {
+            enableScripts: true,
+            localResourceRoots: [vscode.Uri.file(path.dirname(mdFilePath))]
+        }
+    );
+
+    panel.webview.html = getMermaidHtml(mermaidContent);
+}
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
@@ -47,5 +115,44 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
 
     // Start the client. This will also launch the server
     client.start();
+    vscode.workspace.onDidSaveTextDocument(async (doc) => {
+        if (doc.languageId === 'frame-web-writer-tool') {
+            const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
+            const model = await extractAstNode<Program>(doc.fileName, services);
+            const success = generateMermaidMd(model, doc.fileName, undefined);
+
+            const data = extractDestinationAndName(doc.fileName, undefined);
+            const generatedFilePath2 = `${path.join(data.destination, data.name)}.md`;
+           
+            const absPath = path.resolve(generatedFilePath2);
+
+            // const previewFilePath = path.join(
+            //     generatedFilePath2
+            // );
+            
+            const panel = vscode.window.createWebviewPanel(
+                'mermaidPreview',
+                'Mermaid Diagram Preview',
+                vscode.ViewColumn.Beside,
+                {
+                    enableScripts: true,
+                    localResourceRoots: [
+                        vscode.Uri.file(path.join(context.extensionPath, 'src', 'extension', 'media'))
+                    ]
+                }
+            );
+
+            const mermaidPath = vscode.Uri.file(
+                path.join(context.extensionPath, 'src', 'extension', 'media', 'mermaid.min.js')
+            );
+
+            console.log("mermaid path", mermaidPath.path);
+
+            const mermaidUri = panel.webview.asWebviewUri(mermaidPath);
+
+            // const previewUri = vscode.Uri.file(absPath);
+            panel.webview.html = getMermaidHtml2(success, mermaidUri);
+        }
+    });
     return client;
 }

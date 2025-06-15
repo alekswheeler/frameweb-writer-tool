@@ -1,5 +1,5 @@
 import { type ValidationAcceptor, type ValidationChecks } from 'langium';
-import { ClassDef, FrameWebWriterToolAstType} from './generated/ast.js';
+import { ClassDef, FrameWebWriterToolAstType, Model} from './generated/ast.js';
 import type { FrameWebWriterToolServices } from './frame-web-writer-tool-module.js';
 
 /**
@@ -26,4 +26,16 @@ export class FrameWebWriterToolValidator {
         }
     }
 
+    checkClassMembers(attributeBlock: Model, accept: ValidationAcceptor): void {
+        // if (attributeBlock.$cstNode) {
+        //     console.debug(`class ${attributeBlock.name}`);
+        //     for (const attr of attributeBlock.attributes) {
+        //         if(attr.name === undefined || attr.name.length === 0){
+        //             continue;
+        //         }
+        //         console.debug(`${attributeBlock.name} : +String ${attr.name}`);
+        //     }
+        //     console.debug(`\n=========\n`);
+        // }
+    }
 }

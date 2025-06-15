@@ -33,10 +33,7 @@ Package:
     'Page' name=ID;
 
 ClassDef:
-    'Class' name=ID '{'  AttributesBlock?  '}';
-
-AttributesBlock:
-    attributes+=Attribute+;
+    'Class' name=ID '{'  attributes+=Attribute+  '}';
 
 Attribute:
    name=ID ':' type=TypeRef ',';
