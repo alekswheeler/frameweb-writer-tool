@@ -37,7 +37,7 @@ function getMermaidHtml(content: string): string {
     `;
 }
 
-function getMermaidHtml2(content: string, mermaidJsUri: vscode.Uri): string {
+function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri): string {
     return `
         <!DOCTYPE html>
         <html>
@@ -45,7 +45,7 @@ function getMermaidHtml2(content: string, mermaidJsUri: vscode.Uri): string {
             <meta charset="utf-8">
             <script src="${mermaidJsUri}"></script>
             <script>
-                mermaid.initialize({ startOnLoad: true });
+                mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
             </script>
         </head>
         <body>
@@ -116,43 +116,28 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
     // Start the client. This will also launch the server
     client.start();
     vscode.workspace.onDidSaveTextDocument(async (doc) => {
-        if (doc.languageId === 'frame-web-writer-tool') {
-            const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
-            const model = await extractAstNode<Program>(doc.fileName, services);
-            const success = generateMermaidMd(model, doc.fileName, undefined);
+    if (doc.languageId === 'frame-web-writer-tool') {
+        const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
+        const model = await extractAstNode<Program>(doc.fileName, services);
 
-            const data = extractDestinationAndName(doc.fileName, undefined);
-            const generatedFilePath2 = `${path.join(data.destination, data.name)}.md`;
-           
-            const absPath = path.resolve(generatedFilePath2);
+        const diagramContent = generateMermaidMd(model, doc.fileName, undefined);
+        const mediaFolder = path.join(context.extensionPath, 'src', 'extension', 'media');
 
-            // const previewFilePath = path.join(
-            //     generatedFilePath2
-            // );
-            
-            const panel = vscode.window.createWebviewPanel(
-                'mermaidPreview',
-                'Mermaid Diagram Preview',
-                vscode.ViewColumn.Beside,
-                {
-                    enableScripts: true,
-                    localResourceRoots: [
-                        vscode.Uri.file(path.join(context.extensionPath, 'src', 'extension', 'media'))
-                    ]
-                }
-            );
+        const panel = vscode.window.createWebviewPanel(
+            'mermaidPreview',
+            'Mermaid Diagram Preview',
+            vscode.ViewColumn.Beside,
+            {
+                enableScripts: true,
+                localResourceRoots: [vscode.Uri.file(mediaFolder)]
+            }
+        );
 
-            const mermaidPath = vscode.Uri.file(
-                path.join(context.extensionPath, 'src', 'extension', 'media', 'mermaid.min.js')
-            );
+        const mermaidPath = vscode.Uri.file(path.join(mediaFolder, 'mermaid.min.js'));
+        const mermaidUri = panel.webview.asWebviewUri(mermaidPath);
+        panel.webview.html = getMermaidWebviewHtml(diagramContent, mermaidUri);
+    }
+});
 
-            console.log("mermaid path", mermaidPath.path);
-
-            const mermaidUri = panel.webview.asWebviewUri(mermaidPath);
-
-            // const previewUri = vscode.Uri.file(absPath);
-            panel.webview.html = getMermaidHtml2(success, mermaidUri);
-        }
-    });
     return client;
 }
