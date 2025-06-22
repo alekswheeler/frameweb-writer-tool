@@ -42,7 +42,7 @@ TypeRef:
     PrimitiveType | CustomType;
 
 RelationDefinition: 
-    Type name=ID '{' 
+    relationType=RelationType name=ID? '{' 
         RelationBlock? 
     '}' | 
     'Inheritance' '{' 
@@ -53,13 +53,13 @@ RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=QualifiedName ('->' | '--') to=QualifiedName '[' (INT|'*') '..' (INT|'*')  ']';
+	from=QualifiedName ('->' | '--') to=QualifiedName '[' fromN=(INT|'*') '..' toN=(INT|'*')  ']';
 
 InheritanceRelation:
 	from=QualifiedName ('->' | 'extends') to=QualifiedName;
 
-Type:
-    type='Association' | 'Agregation' | 'Composition';
+RelationType:
+    associationType=('Association' | 'Agregation' | 'Composition');
 
 PrimitiveType:
     type=('number' | 'string' | 'bool');
