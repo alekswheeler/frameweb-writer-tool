@@ -53,7 +53,16 @@ RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=QualifiedName ('->' | '--') to=QualifiedName '[' fromN=(INT|'*') '..' toN=(INT|'*')  ']';
+	from=QualifiedName 
+    cardinalityFrom=Cardinality?
+    ('->' | '--') 
+    cardinalityTo=Cardinality?
+    to=QualifiedName 
+    ;
+
+Cardinality returns string:
+    (('"' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') '"') | ('"' (INT|'*'|'n'|'m') '"'))
+    ;
 
 InheritanceRelation:
 	from=QualifiedName ('->' | 'extends') to=QualifiedName;

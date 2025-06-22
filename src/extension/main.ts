@@ -11,67 +11,74 @@ import { generateMermaidMd } from '../cli/generator.js';
 
 let client: LanguageClient;
 
-function getMermaidHtml(content: string): string {
-    // Extração do bloco mermaid do .md (caso ele esteja dentro de ```mermaid ... ```)
-    const mermaidRegex = /```mermaid\s*([\s\S]*?)```/gm;
-    const match = mermaidRegex.exec(content);
-    const diagramCode = match ? match[1].trim() : content.trim();
-
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Mermaid Preview</title>
-        <script type="module">
-            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-            mermaid.initialize({ startOnLoad: true });
-        </script>
-    </head>
-    <body>
-        <div class="mermaid">
-            ${diagramCode}
-        </div>
-    </body>
-    </html>
-    `;
-}
-
-function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri): string {
+function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri, panzoomJsUri: vscode.Uri): string {
     return `
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8">
+            <style>
+                body {
+                    margin: 0;
+                    overflow: hidden;
+                }
+                #container {
+                    width: 100vw;
+                    height: 100vh;
+                    cursor: grab;
+                }
+                .mermaid {
+                    width: max-content;
+                    margin: auto;
+                }
+                .namespace > rect {
+                    fill: #f0f0f0;
+                    stroke: #999999;
+                    rx: 6;
+                    ry: 6;
+                }
+            </style>
             <script src="${mermaidJsUri}"></script>
+            <script src="${panzoomJsUri}"></script>
             <script>
-                mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+                window.addEventListener('DOMContentLoaded', () => {
+                    mermaid.initialize({ startOnLoad: true });
+                    const container = document.getElementById('container');
+                    panzoom(container, {
+                        smoothScroll: false,
+                        zoomSpeed: 0.065,
+                        maxZoom: 5,
+                        minZoom: 0.2
+                    });
+                });
             </script>
         </head>
         <body>
-            <div class="mermaid">
-                ${content}
+            <div id="container">
+                <div class="mermaid">
+                    ${content}
+                </div>
             </div>
         </body>
         </html>
     `;
 }
 
-export async function showMermaidPreview(mdFilePath: string) {
-    const mermaidContent = fs.readFileSync(mdFilePath, 'utf-8');
+// export async function showMermaidPreview(mdFilePath: string) {
+//     const mermaidContent = fs.readFileSync(mdFilePath, 'utf-8');
 
-    const panel = vscode.window.createWebviewPanel(
-        'mermaidPreview',
-        'Mermaid Diagram Preview',
-        vscode.ViewColumn.Beside,
-        {
-            enableScripts: true,
-            localResourceRoots: [vscode.Uri.file(path.dirname(mdFilePath))]
-        }
-    );
+//     const panel = vscode.window.createWebviewPanel(
+//         'mermaidPreview',
+//         'Mermaid Diagram Preview',
+//         vscode.ViewColumn.Beside,
+//         {
+//             enableScripts: true,
+//             localResourceRoots: [vscode.Uri.file(path.dirname(mdFilePath))]
+//         }
+//     );
 
-    panel.webview.html = getMermaidHtml(mermaidContent);
-}
+//     panel.webview.html = getMermaidHtml(mermaidContent);
+// }
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
@@ -135,7 +142,10 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
 
         const mermaidPath = vscode.Uri.file(path.join(mediaFolder, 'mermaid.min.js'));
         const mermaidUri = panel.webview.asWebviewUri(mermaidPath);
-        panel.webview.html = getMermaidWebviewHtml(diagramContent, mermaidUri);
+        const panzoomPath = vscode.Uri.file(path.join(mediaFolder, 'panzoom.min.js'));
+        const panzoomUri = panel.webview.asWebviewUri(panzoomPath);
+
+        panel.webview.html = getMermaidWebviewHtml(diagramContent, mermaidUri, panzoomUri);
     }
 });
 

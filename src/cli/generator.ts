@@ -66,33 +66,32 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
             let relation = element as RelationBlock;
             let relations = relation.relations;
 
+            let relationConnector = "";
 
-            if(relationTypeName === 'Composition'){
-                relations.forEach(x => {
-                    result += `${x.to} "${x.fromN}"  *-- "${x.toN}" ${x.from}`;
-                    if(relationName !== undefined){
-                        result += ` : ${relationName} \n`;
-                    }
-                });
+            switch (relationTypeName) {
+                case 'Composition':
+                    relationConnector = '*--';
+                    break;
+                case 'Agregation':
+                    relationConnector = 'o--';
+                    break;
+                case 'Association':
+                    relationConnector = '<--';
+                    break;
+        
+                default:
+                    break;
             }
+            
+            relations.forEach(x => {
+                let cardinalityFrom = x.cardinalityFrom === undefined ? "" : x.cardinalityFrom;
+                let cardinalityTo = x.cardinalityTo === undefined ? "" : x.cardinalityTo;
 
-            if(relationTypeName === 'Agregation'){
-                relations.forEach(x => {
-                    result += `${x.to} "${x.fromN}" o-- "${x.toN}" ${x.from}`;
-                    if(relationName !== undefined){
-                        result += ` : ${relationName} \n`;
-                    }
-                });
-            }
-
-            if(relationTypeName === 'Association'){
-                relations.forEach(x => {
-                    result += `${x.to} "${x.fromN}" <-- "${x.toN}" ${x.from}`;
-                    if(relationName !== undefined){
-                        result += ` : ${relationName} \n`;
-                    }
-                });
-            } 
+                result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from}`;
+                if(relationName !== undefined){
+                    result += ` : ${relationName} \n`;
+                }
+            });
         }
 
     });
