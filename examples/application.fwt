@@ -1,22 +1,29 @@
-Application
+Package Application
 {
-
 	Class Person
 	{
 		name: string,
 		age: number,
 	}
 
-	Class Car 
+	Class Car
 	{
 		owner: string,
 		color: string,
 	}
 
-	Composition Ownership
+	Composition subscribedIn
 	{
-    	Car -> Person [1..*]
-		Person -> Car [1..1]
+		Student "*" -> "1..*" Subject
+	}
+
+	Association Owner
+	{
+		Person -> "*" Car
+	}
+	Inheritance
+	{
+		Student -> Person
 	}
 
 }
