@@ -1,13 +1,24 @@
-Application
+Package Application
+{
+	Class Person
+	{
+		name: string,
+		age: number,
+	}
 
-    /*
-		pt:
-		en:
-	*/
-	Class Person:
-		name: string
-		age: number
+	Class Car 
+	{
+		owner: string,
+		color: string,
+	}
 
-	Class Car:
-		owner: Person
-		color: string
+	Composition Ownership
+	{
+    	Car -> Person [1..*]
+		Person -> Car [1..1]
+	}
+
+	Inheritance {
+		Person -> Student
+	}
+}

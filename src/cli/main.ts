@@ -1,10 +1,10 @@
-import type { Model } from '../language/generated/ast.js';
+import type { ClassDef, PackageDeclaration, Program } from '../language/generated/ast.js';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { FrameWebWriterToolLanguageMetaData } from '../language/generated/module.js';
 import { createFrameWebWriterToolServices } from '../language/frame-web-writer-tool-module.js';
 import { extractAstNode } from './cli-util.js';
-import { generateJavaScript } from './generator.js';
+import { generateMermaidMd } from './generator.js';
 import { NodeFileSystem } from 'langium/node';
 import * as url from 'node:url';
 import * as fs from 'node:fs/promises';
@@ -16,8 +16,8 @@ const packageContent = await fs.readFile(packagePath, 'utf-8');
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
-    const model = await extractAstNode<Model>(fileName, services);
-    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
+    const model = await extractAstNode<Program>(fileName, services);
+    const generatedFilePath = generateMermaidMd(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
 };
 

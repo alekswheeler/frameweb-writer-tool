@@ -1,17 +1,23 @@
 grammar FrameWebWriterTool
 
-entry Program: (stmts+=Stmt)*;
+entry Program:
+    (imports+=FileImport)*
+    (stmts+=Stmt)*
+    ;
 
-Stmt: Tier;
+Stmt: packageDeclaration=PackageDeclaration | model=Model;
 
-Tier: (PackageDeclaration);
+FileImport:
+    'import' (imports+=ImportSpec | '*') 'from' file=STRING ';';
+
+ImportSpec:
+    name=ID ('as' alias=ID)?;
 
 PackageDeclaration:
     'Package' name=QualifiedName '{'
         classes+=ClassDef*
         relations+=RelationDefinition*
     '}';
-
 
 // AppTier:
 //     'Application' '{' 
@@ -27,16 +33,14 @@ PackageDeclaration:
 
 // ==================================
 
-Model: (Package | ClassDef);
+Model:
+    (Page | ClassDef | RelationDefinition);
 
-Package:
+Page:
     'Page' name=ID;
 
 ClassDef:
-    'Class' name=ID '{'  AttributesBlock?  '}';
-
-AttributesBlock:
-    attributes+=Attribute+;
+    'Class' name=ID '{'  attributes+=Attribute+  '}';
 
 Attribute:
    name=ID ':' type=TypeRef ',';
@@ -45,24 +49,33 @@ TypeRef:
     PrimitiveType | CustomType;
 
 RelationDefinition: 
-    Type name=ID '{' 
-        RelationBlock? 
+    relationType=RelationType name=ID? '{' 
+        block=RelationBlock? 
     '}' | 
     'Inheritance' '{' 
-        InheritanceRelation
+        inheritance=InheritanceRelation
     '}';
 
 RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=QualifiedName ('->' | '--') to=QualifiedName '[' (INT|'*') '..' (INT|'*')  ']';
+	from=QualifiedName 
+    cardinalityFrom=Cardinality?
+    ('->' | '--') 
+    cardinalityTo=Cardinality?
+    to=QualifiedName 
+    ;
+
+Cardinality returns string:
+    (('[' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') ']') | ('[' (INT|'*'|'n'|'m') ']'))
+    ;
 
 InheritanceRelation:
 	from=QualifiedName ('->' | 'extends') to=QualifiedName;
 
-Type:
-    type='Association' | 'Agregation' | 'Composition';
+RelationType:
+    associationType=('Association' | 'Agregation' | 'Composition');
 
 PrimitiveType:
     type=('number' | 'string' | 'bool');

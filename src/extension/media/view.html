@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{style}}">
+</head>
+<body>
+    <div id="container">
+        <div class="mermaid">{{diagram}}</div>
+    </div>
+
+    <script src="{{mermaid}}"></script>
+    <script src="{{panzoom}}"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({ startOnLoad: true });
+
+            const container = document.getElementById('container');
+            panzoom(container, {
+                smoothScroll: false,
+                zoomSpeed: 0.065,
+                maxZoom: 5,
+                minZoom: 0.2
+            });
+
+            // Estilo decorativo no namespace (opcional)
+            const rect = document.querySelector('g[class$="namespace"] > rect');
+            if (rect) {
+                const svg = document.querySelector('svg');
+                const tab = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                tab.setAttribute('x', Number(rect.getAttribute('x')) + 10);
+                tab.setAttribute('y', Number(rect.getAttribute('y')) - 12);
+                tab.setAttribute('width', '25');
+                tab.setAttribute('height', '10');
+                tab.setAttribute('fill', '#999');
+                svg.appendChild(tab);
+            }
+        });
+    </script>
+</body>
+</html>
