@@ -11,6 +11,8 @@
     "scripts": {
         "prep": "langium generate && npm run build",
         "build": "tsc -b tsconfig.src.json && rollup -c",
+        "build:rollup": "tsc -b tsconfig.src.json && rollup -c",
+        "cli:generate": "node ./bin/cli.js generate",
         "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.src.json --watch\" \"node esbuild.mjs --watch\"",
         "lint": "eslint src --ext ts",
         "langium:generate": "langium generate",

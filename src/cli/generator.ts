@@ -1,4 +1,4 @@
-import { Model, ClassDef, PackageDeclaration, Program, InheritanceRelation, RelationBlock, RelationType } from '../language/generated/ast.js';
+import { Model, ClassDef, PackageDeclaration, Program, InheritanceRelation, RelationBlock, RelationType, RelationDefinition, Page } from '../language/generated/ast.js';
 import { expandToNode, joinToNode, toString } from 'langium/generate';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -31,72 +31,114 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
         fs.mkdirSync(data.destination, { recursive: true });
     }
 
-    let result = "classDiagram\n\n";
-
-    result += "namespace " + program.stmts[0].name + '{\n\n';
-
-    let classesArray = program.stmts[0].classes;
-
-    classesArray.forEach(element => {
-        result += `class ${element.name}{\n`;
-        // console.log("class", element.name);
-        element.attributes.forEach(att => {
-            result += `+String ${att.name}\n`;
-            // console.log(element.name, ": +String",att.name)
-        });
-        // console.log()
-        result += "}\n";
-    });
-
-    
-    result += '}\n';
-    let relationDefArray = program.stmts[0].relations;
-
-    relationDefArray.forEach(element => {
-        if(element.$type === InheritanceRelation){
-            const inhetance = element as InheritanceRelation;
-            const value = `${inhetance.to} <|-- ${inhetance.from}`;
-            result += value;
-        }
-        if(element.$type === RelationBlock){
-            let relationName = element.name;
-            let relationType = element.relationType as RelationType;
-            let relationTypeName = relationType.associationType;
-            
-            let relation = element as RelationBlock;
-            let relations = relation.relations;
-
-            let relationConnector = "";
-
-            switch (relationTypeName) {
-                case 'Composition':
-                    relationConnector = '*--';
-                    break;
-                case 'Agregation':
-                    relationConnector = 'o--';
-                    break;
-                case 'Association':
-                    relationConnector = '<--';
-                    break;
+    let result = "\nclassDiagram\n\n";
+    program.stmts.forEach(stmt => {
+        if(stmt.packageDeclaration){
+            result += "namespace " + stmt.packageDeclaration.name + "{\n\n";
         
-                default:
-                    break;
-            }
-            
-            relations.forEach(x => {
-                let cardinalityFrom = x.cardinalityFrom === undefined ? "" : x.cardinalityFrom;
-                let cardinalityTo = x.cardinalityTo === undefined ? "" : x.cardinalityTo;
-
-                result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from}`;
-                if(relationName !== undefined){
-                    result += ` : ${relationName} \n`;
-                }
+            let packageDef = stmt.packageDeclaration;
+        
+            let classesArray = packageDef?.classes;
+        
+            classesArray?.forEach(element => {
+                result += evalClassDefinition(element);
             });
-        }
+        
+            result += '}\n';
+            let relationDefArray = packageDef?.relations;
+        
+            relationDefArray?.forEach(element => {
+                result += evalRelationDefinition(element);
+            });
+        }else{
+            if(stmt.model){
+                let x = stmt.model;
 
+                if (x.$type === Page) {
+                }
+                if (x.$type === ClassDef) {
+                    result += evalClassDefinition(x);
+                }
+                if (x.$type === RelationDefinition) {
+                    result += evalRelationDefinition(x);
+                }
+            }
+        }
     });
 
 
     fs.writeFileSync(generatedFilePath, result);
+    return result;
+}
+
+function evalClassDefinition(classDef: ClassDef): string{
+    let result = "";
+
+    result += `class ${classDef.name}{\n`;
+    // console.log("class", element.name);
+    classDef.attributes.forEach((att) => {
+      result += `+String ${att.name}\n`;
+      // console.log(element.name, ": +String",att.name)
+    });
+    // console.log()
+    result += "}\n";
+    return result;
+}
+
+function evalRelationDefinition(association: RelationDefinition): string{
+    let result = "";
+    if (association.inheritance) {
+        const inhetance = association.inheritance;
+        const value = `${inhetance.to} <|-- ${inhetance.from} \n`;
+        result += value;
+    }
+    if (association.block) {
+        console.log("Passou aqui 3");
+        let relation = association;
+
+        let relationName = relation.name;
+        let relationType = relation.relationType as RelationType;
+        let relationTypeName = relationType.associationType;
+
+        let relations = relation.block?.relations;
+
+        let relationConnector = "";
+
+        switch (relationTypeName) {
+        case "Composition":
+            relationConnector = "*--";
+            break;
+        case "Agregation":
+            relationConnector = "o--";
+            break;
+        case "Association":
+            relationConnector = "<--";
+            break;
+        default:
+            break;
+        }
+
+        relations?.forEach((x) => {
+            let cardinalityFrom =
+                x.cardinalityFrom === undefined
+                ? ""
+                : x.cardinalityFrom
+                    .replace("[", '"')
+                    .replace("]", '"');
+
+            let cardinalityTo =
+                x.cardinalityTo === undefined
+                ? ""
+                : x.cardinalityTo
+                    .replace("[", '"')
+                    .replace("]", '"');
+
+            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from}\n`;
+
+            if (relationName !== undefined) {
+                result += ` : ${relationName} \n`;
+            }
+            });
+    }
     return result;
 }

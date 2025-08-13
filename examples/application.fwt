@@ -1,3 +1,5 @@
+import * from "lolll.src";
+
 Package Application
 {
 	Class Person
@@ -12,18 +14,20 @@ Package Application
 		color: string,
 	}
 
-	Composition subscribedIn
-	{
-		Student "*" -> "1..*" Subject
-	}
+}
 
-	Association Owner
-	{
-		Person -> "*" Car
-	}
-	Inheritance
-	{
-		Student -> Person
-	}
+Class Dog
+{
+	owner: string,
+	color: string,
+}
 
+Inheritance{
+	Person -> Car
+}
+
+Class Home
+{
+	owner: string,
+	color: string,
 }

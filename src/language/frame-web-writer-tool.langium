@@ -1,17 +1,23 @@
 grammar FrameWebWriterTool
 
-entry Program: (stmts+=Stmt)*;
+entry Program:
+    (imports+=FileImport)*
+    (stmts+=Stmt)*
+    ;
 
-Stmt: Tier;
+Stmt: packageDeclaration=PackageDeclaration | model=Model;
 
-Tier: (PackageDeclaration);
+FileImport:
+    'import' (imports+=ImportSpec | '*') 'from' file=STRING ';';
+
+ImportSpec:
+    name=ID ('as' alias=ID)?;
 
 PackageDeclaration:
     'Package' name=QualifiedName '{'
         classes+=ClassDef*
         relations+=RelationDefinition*
     '}';
-
 
 // AppTier:
 //     'Application' '{' 
@@ -27,9 +33,10 @@ PackageDeclaration:
 
 // ==================================
 
-Model: (Package | ClassDef);
+Model:
+    (Page | ClassDef | RelationDefinition);
 
-Package:
+Page:
     'Page' name=ID;
 
 ClassDef:
@@ -43,10 +50,10 @@ TypeRef:
 
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
-        RelationBlock? 
+        block=RelationBlock? 
     '}' | 
     'Inheritance' '{' 
-        InheritanceRelation
+        inheritance=InheritanceRelation
     '}';
 
 RelationBlock:
@@ -61,7 +68,7 @@ Relation:
     ;
 
 Cardinality returns string:
-    (('"' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') '"') | ('"' (INT|'*'|'n'|'m') '"'))
+    (('[' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') ']') | ('[' (INT|'*'|'n'|'m') ']'))
     ;
 
 InheritanceRelation:

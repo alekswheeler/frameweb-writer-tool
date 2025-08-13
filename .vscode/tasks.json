@@ -7,14 +7,6 @@
             "label": "generate",
             "command": "bash",
             "args": ["-c", "npm run langium:generate"],
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": false,
-                "clear": false
-            },
             "type": "shell",
             "detail": "Langium: Generate grammar and build the frame-web-writer-tool language",
             "icon": {
@@ -28,14 +20,6 @@
             "args": ["-c", "npm run build"],
             "type": "shell",
             "detail": "Langium: Build the frame-web-writer-tool language",
-            "presentation": {
-                "echo": true,
-                "reveal": "silent",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": false,
-                "clear": false
-            },
             "icon": {
                 "color": "terminal.ansiGreen",
                 "id": "server-process"

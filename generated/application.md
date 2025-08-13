@@ -1,3 +1,4 @@
+
 classDiagram
 
 namespace Application{
@@ -11,5 +12,12 @@ class Car{
 +String color
 }
 }
-Subject "*" <-- "1..*" Student : subscribedIn 
-Car undefined <-- "*" Person : Owner 
+class Dog{
++String owner
++String color
+}
+Car <|-- Person 
+class Home{
++String owner
++String color
+}
