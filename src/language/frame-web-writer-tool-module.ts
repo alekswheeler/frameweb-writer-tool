@@ -2,6 +2,7 @@ import { type Module, inject } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { FrameWebWriterToolGeneratedModule, FrameWebWriterToolGeneratedSharedModule } from './generated/module.js';
 import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-web-writer-tool-validator.js';
+import { FrameWebScopeComputation } from './frame-web-scope-computation.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -9,6 +10,9 @@ import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-w
 export type FrameWebWriterToolAddedServices = {
     validation: {
         FrameWebWriterToolValidator: FrameWebWriterToolValidator
+    },
+    language: {
+        FrameWebScopeComputation: FrameWebScopeComputation
     }
 }
 
@@ -26,6 +30,9 @@ export type FrameWebWriterToolServices = LangiumServices & FrameWebWriterToolAdd
 export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, PartialLangiumServices & FrameWebWriterToolAddedServices> = {
     validation: {
         FrameWebWriterToolValidator: () => new FrameWebWriterToolValidator()
+    },
+    language: {
+        FrameWebScopeComputation: (services) => new FrameWebScopeComputation(services)
     }
 };
 
