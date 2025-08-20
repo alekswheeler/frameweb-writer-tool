@@ -11,7 +11,7 @@ export type FrameWebWriterToolAddedServices = {
     validation: {
         FrameWebWriterToolValidator: FrameWebWriterToolValidator
     },
-    language: {
+    references: {
         FrameWebScopeComputation: FrameWebScopeComputation
     }
 }
@@ -31,7 +31,7 @@ export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, Partia
     validation: {
         FrameWebWriterToolValidator: () => new FrameWebWriterToolValidator()
     },
-    language: {
+    references: {
         FrameWebScopeComputation: (services) => new FrameWebScopeComputation(services)
     }
 };

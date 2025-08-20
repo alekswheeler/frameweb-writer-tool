@@ -44,7 +44,7 @@ export const debugScopeAction = async (fileName: string): Promise<void> => {
     await services.shared.workspace.DocumentBuilder.build([document]);
 
     // Obtém o ScopeComputation
-    const scopeComputation = services.language.FrameWebScopeComputation;
+    const scopeComputation = services.references.FrameWebScopeComputation;
 
     // Calcula os exports
     const exports = await scopeComputation.computeExports(document);
