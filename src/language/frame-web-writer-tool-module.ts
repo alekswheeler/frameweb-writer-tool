@@ -3,6 +3,7 @@ import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModul
 import { FrameWebWriterToolGeneratedModule, FrameWebWriterToolGeneratedSharedModule } from './generated/module.js';
 import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-web-writer-tool-validator.js';
 import { FrameWebScopeComputation } from './frame-web-scope-computation.js';
+import { FrameWebScopeProvider } from './frame-web-scope-provider.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -12,7 +13,8 @@ export type FrameWebWriterToolAddedServices = {
         FrameWebWriterToolValidator: FrameWebWriterToolValidator
     },
     references: {
-        FrameWebScopeComputation: FrameWebScopeComputation
+        ScopeComputation: FrameWebScopeComputation,
+        ScopeProvider: FrameWebScopeProvider
     }
 }
 
@@ -32,7 +34,8 @@ export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, Partia
         FrameWebWriterToolValidator: () => new FrameWebWriterToolValidator()
     },
     references: {
-        FrameWebScopeComputation: (services) => new FrameWebScopeComputation(services)
+        ScopeComputation: (services) => new FrameWebScopeComputation(services),
+        ScopeProvider: (services) => new FrameWebScopeProvider(services)
     }
 };
 

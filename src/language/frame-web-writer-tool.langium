@@ -11,7 +11,7 @@ FileImport:
     'import' (imports+=ImportSpec | '*') 'from' file=STRING ';';
 
 ImportSpec:
-    name=ID ('as' alias=ID)?;
+    className=[ClassDef:ID] ('as' alias=ID)?; 
 
 PackageDeclaration:
     'Package' name=QualifiedName '{'
@@ -72,7 +72,7 @@ Cardinality returns string:
     ;
 
 InheritanceRelation:
-	from=QualifiedName ('->' | 'extends') to=QualifiedName;
+    from=[ClassDef:QualifiedName] ('->' | 'extends') to=[ClassDef:QualifiedName];
 
 RelationType:
     associationType=('Association' | 'Agregation' | 'Composition');
