@@ -8,7 +8,7 @@ entry Program:
 Stmt: packageDeclaration=PackageDeclaration | model=Model;
 
 FileImport:
-    'import' (imports+=ImportSpec | '*') 'from' file=STRING ';';
+    'import' (imports+=ImportSpec (',' personImports+=ImportSpec)*) 'from' file=STRING ';';
 
 ImportSpec:
     className=[ClassDef:ID] ('as' alias=ID)?; 

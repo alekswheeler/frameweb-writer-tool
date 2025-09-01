@@ -1,33 +1,53 @@
-import * from "lolll.src";
+import Person, Address from "./medical-core.fwt";
 
-Package Application
-{
-	Class Person
-	{
-		name: string,
-		age: number,
-	}
+Package HospitalStaff {
+    Class Employee {
+        employeeId: string,
+        hireDate: string,
+        salary: number,
+        workAddress: Address,
+    }
+    
+    Class Doctor {
+        licenseNumber: string,
+        specialization: string,
+        yearsOfExperience: number,
+    }
+    
+    Class Nurse {
+        certificationLevel: string,
+        department: string,
+    }
+    
+    Class Administrator {
+        accessLevel: string,
+        department: string,
+    }
 
-	Class Car
-	{
-		owner: string,
-		color: string,
-	}
+    
+    // Inheritance {
+    //     Doctor extends Employee
+    // }
+    
+    // Inheritance {
+    //     Nurse extends Person
+    // }
+    
+    // Inheritance {
+    //     Nurse --> Employee
+    // }
+    
+    // Inheritance {
+    //     Administrator --> Person
+    // }
+    
+    // Inheritance {
+    //     Administrator --> Employee
+    // }
 
+	// Herança múltipla conceitual
 }
 
-Class Dog
-{
-	owner: string,
-	color: string,
-}
-
-Inheritance{
-	Person -> Car
-}
-
-Class Home
-{
-	owner: string,
-	color: string,
+Inheritance {
+	Doctor --> Person
 }
