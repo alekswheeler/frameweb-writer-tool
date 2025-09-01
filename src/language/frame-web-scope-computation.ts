@@ -70,14 +70,6 @@ export class FrameWebScopeComputation extends DefaultScopeComputation {
       }
     }
 
-    // DEBUG: Mostra o que está sendo exportado
-    // console.log("=== Exported Elements ===");
-    // console.log(`File: ${document.uri.fsPath}`);
-    // descriptions.forEach((desc) => {
-    //   console.log(`- ${desc.name} (${desc.type})`);
-    // });
-    // console.log("=========================");
-
     return descriptions;
   }
 
@@ -86,6 +78,7 @@ export class FrameWebScopeComputation extends DefaultScopeComputation {
   }
 
   private getQualifiedName(name: string, packageName: string): string {
-    return `${packageName}.${name}`;
+    return `${name}`;
+    // return `${packageName}.${name}`;
   }
 }
