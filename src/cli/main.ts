@@ -1,4 +1,4 @@
-import type { ClassDef, PackageDeclaration, Program } from '../language/generated/ast.js';
+import type { Program } from '../language/generated/ast.js';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { FrameWebWriterToolLanguageMetaData } from '../language/generated/module.js';
@@ -10,6 +10,7 @@ import * as url from 'node:url';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { URI } from 'langium';
+import { FrameWebWorkspaceInitializer } from '../workspace-initializer.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const packagePath = path.resolve(__dirname, '..', '..', 'package.json');
@@ -17,6 +18,9 @@ const packageContent = await fs.readFile(packagePath, 'utf-8');
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
+    
+    await FrameWebWorkspaceInitializer.initialize(services.shared, process.cwd());
+    
     const model = await extractAstNode<Program>(fileName, services);
     const generatedFilePath = generateMermaidMd(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
