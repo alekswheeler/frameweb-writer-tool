@@ -1,4 +1,3 @@
-// language/frame-web-scope-provider.ts
 import { AstNodeDescription, AstUtils, DefaultScopeProvider, ReferenceInfo, Scope, URI } from "langium";
 import path from "path";
 import { FrameWebWriterToolServices } from "./frame-web-writer-tool-module.js";
@@ -11,7 +10,6 @@ export class FrameWebScopeProvider extends DefaultScopeProvider {
     }
 
     override getScope(context: ReferenceInfo): Scope {
-        // Para referências em herança
         if (context.container.$type === 'ImportSpec') {
             if (context.property === 'className') {
                 const r = this.getExportedClassesFromGlobalScope(context); 
@@ -19,10 +17,11 @@ export class FrameWebScopeProvider extends DefaultScopeProvider {
             }
         }
         
-        if (context.property === 'from') {
-            const r = this.getImportedClassesFromCurrentFile(context); 
-            return r;
-        }
+        //the current file is handled by the default scope provider
+        // if (context.property === 'from') {
+        //     const r = this.getImportedClassesFromCurrentFile(context); 
+        //     return r;
+        // }
         
         return super.getScope(context);
     }
@@ -65,7 +64,6 @@ export class FrameWebScopeProvider extends DefaultScopeProvider {
         return this.createScope(astNodeDescriptions);
     }
 
-    // ✅ Função 2: Pega classes importadas no arquivo atual  
     private getImportedClassesFromCurrentFile(context: ReferenceInfo): Scope {
         const document = AstUtils.getDocument(context.container);
         const model = document.parseResult.value as Program;
