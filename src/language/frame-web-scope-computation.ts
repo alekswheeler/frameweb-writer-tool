@@ -2,7 +2,6 @@ import { DefaultScopeComputation, LangiumDocument, AstNodeDescription } from "la
 import { LangiumServices } from "langium/lsp";
 import { isPackageDeclaration, isModel, isClassDef, isPage, isRelationDefinition, Program } from "./generated/ast.js";
 
-
 export class FrameWebScopeComputation extends DefaultScopeComputation {
   constructor(services: LangiumServices) {
     super(services);
