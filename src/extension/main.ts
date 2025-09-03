@@ -1,13 +1,7 @@
 import type { LanguageClientOptions, ServerOptions} from 'vscode-languageclient/node.js';
 import * as vscode from 'vscode';
 import * as path from 'node:path';
-import * as fs from 'fs';
 import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
-import { NodeFileSystem } from 'langium/node';
-import { createFrameWebWriterToolServices } from '../language/frame-web-writer-tool-module.js';
-import { Program } from '../language/generated/ast.js';
-import { extractAstNode, extractDestinationAndName } from '../cli/cli-util.js';
-import { generateMermaidMd } from '../cli/generator.js';
 
 let client: LanguageClient;
 
@@ -64,22 +58,6 @@ function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri, panzoo
     `;
 }
 
-// export async function showMermaidPreview(mdFilePath: string) {
-//     const mermaidContent = fs.readFileSync(mdFilePath, 'utf-8');
-
-//     const panel = vscode.window.createWebviewPanel(
-//         'mermaidPreview',
-//         'Mermaid Diagram Preview',
-//         vscode.ViewColumn.Beside,
-//         {
-//             enableScripts: true,
-//             localResourceRoots: [vscode.Uri.file(path.dirname(mdFilePath))]
-//         }
-//     );
-
-//     panel.webview.html = getMermaidHtml(mermaidContent);
-// }
-
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
@@ -123,13 +101,21 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
     // Start the client. This will also launch the server
     client.start();
     vscode.workspace.onDidSaveTextDocument(async (doc) => {
-    if (doc.languageId === 'frame-web-writer-tool') {
-        const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
-        const model = await extractAstNode<Program>(doc.fileName, services);
+        if (doc.languageId === 'frame-web-writer-tool') {
+            // Enviar notificação para o server
+            client.sendNotification('custom/generateDiagram', {
+                uri: doc.uri.toString()
+            });
+        }
+    });
 
-        const diagramContent = generateMermaidMd(model, doc.fileName, undefined);
+    // Receber resultado do server
+    client.onNotification('custom/diagramGenerated', (params: { uri: string, content: string }) => {
+        console.log(`Diagram generated for: ${params.uri}`);
+        
+        // Criar webview com o conteúdo
         const mediaFolder = path.join(context.extensionPath, 'src', 'extension', 'media');
-
+        
         const panel = vscode.window.createWebviewPanel(
             'mermaidPreview',
             'Mermaid Diagram Preview',
@@ -145,9 +131,12 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
         const panzoomPath = vscode.Uri.file(path.join(mediaFolder, 'panzoom.min.js'));
         const panzoomUri = panel.webview.asWebviewUri(panzoomPath);
 
-        panel.webview.html = getMermaidWebviewHtml(diagramContent, mermaidUri, panzoomUri);
-    }
-});
+        panel.webview.html = getMermaidWebviewHtml(params.content, mermaidUri, panzoomUri);
+    });
+
+    client.onNotification('custom/diagramError', (params: { uri: string, error: string }) => {
+        vscode.window.showErrorMessage(`Error generating diagram: ${params.error}`);
+    });
 
     return client;
 }

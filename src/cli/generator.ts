@@ -89,11 +89,11 @@ function evalRelationDefinition(association: RelationDefinition): string{
     let result = "";
     if (association.inheritance) {
         const inhetance = association.inheritance;
-        const value = `${inhetance.to} <|-- ${inhetance.from} \n`;
+
+        const value = `${inhetance.to.ref?.name} <|-- ${inhetance.from.ref?.name} \n`;
         result += value;
     }
     if (association.block) {
-        console.log("Passou aqui 3");
         let relation = association;
 
         let relationName = relation.name;

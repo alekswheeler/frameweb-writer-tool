@@ -8,10 +8,10 @@ entry Program:
 Stmt: packageDeclaration=PackageDeclaration | model=Model;
 
 FileImport:
-    'import' (imports+=ImportSpec | '*') 'from' file=STRING ';';
+    'import' (imports+=ImportSpec (',' personImports+=ImportSpec)*) 'from' file=STRING ';';
 
 ImportSpec:
-    name=ID ('as' alias=ID)?;
+    className=[ClassDef:ID] ('as' alias=ID)?; 
 
 PackageDeclaration:
     'Package' name=QualifiedName '{'
@@ -40,7 +40,7 @@ Page:
     'Page' name=ID;
 
 ClassDef:
-    'Class' name=ID '{'  attributes+=Attribute+  '}';
+    'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:
    name=ID ':' type=TypeRef ',';
@@ -72,7 +72,7 @@ Cardinality returns string:
     ;
 
 InheritanceRelation:
-	from=QualifiedName ('->' | 'extends') to=QualifiedName;
+    from=[ClassDef:QualifiedName] ('->' | 'extends') to=[ClassDef:QualifiedName];
 
 RelationType:
     associationType=('Association' | 'Agregation' | 'Composition');

@@ -2,6 +2,8 @@ import { type Module, inject } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { FrameWebWriterToolGeneratedModule, FrameWebWriterToolGeneratedSharedModule } from './generated/module.js';
 import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-web-writer-tool-validator.js';
+import { FrameWebScopeComputation } from './frame-web-scope-computation.js';
+import { FrameWebScopeProvider } from './frame-web-scope-provider.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -9,6 +11,10 @@ import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-w
 export type FrameWebWriterToolAddedServices = {
     validation: {
         FrameWebWriterToolValidator: FrameWebWriterToolValidator
+    },
+    references: {
+        ScopeComputation: FrameWebScopeComputation,
+        ScopeProvider: FrameWebScopeProvider
     }
 }
 
@@ -26,6 +32,10 @@ export type FrameWebWriterToolServices = LangiumServices & FrameWebWriterToolAdd
 export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, PartialLangiumServices & FrameWebWriterToolAddedServices> = {
     validation: {
         FrameWebWriterToolValidator: () => new FrameWebWriterToolValidator()
+    },
+    references: {
+        ScopeComputation: (services) => new FrameWebScopeComputation(services),
+        ScopeProvider: (services) => new FrameWebScopeProvider(services)
     }
 };
 
