@@ -54,7 +54,7 @@
         "eslint": "~8.57.0",
         "http-server": "~14.1.1",
         "langium-cli": "~3.4.0",
-        "mermaid": "^11.6.0",
+        "mermaid": "^11.10.0",
         "rollup": "^4.45.0",
         "typescript": "~5.1.6",
         "vite": "~6.2.1",
