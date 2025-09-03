@@ -10,7 +10,7 @@ import * as url from 'node:url';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { URI } from 'langium';
-import { FrameWebWorkspaceInitializer } from '../workspace-initializer.js';
+import { FrameWebWorkspaceManager } from '../language/frame-web-workspace-manager.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const packagePath = path.resolve(__dirname, '..', '..', 'package.json');
@@ -19,8 +19,8 @@ const packageContent = await fs.readFile(packagePath, 'utf-8');
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createFrameWebWriterToolServices(NodeFileSystem).FrameWebWriterTool;
     
-    await FrameWebWorkspaceInitializer.initialize(services.shared, process.cwd());
-    
+    await FrameWebWorkspaceManager.initialize(services.shared, process.cwd());
+
     const model = await extractAstNode<Program>(fileName, services);
     const generatedFilePath = generateMermaidMd(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));

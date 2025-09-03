@@ -89,8 +89,6 @@ function evalRelationDefinition(association: RelationDefinition): string{
     let result = "";
     if (association.inheritance) {
         const inhetance = association.inheritance;
-        console.log("TO", inhetance.to.ref?.$type);
-        console.log("FROM", inhetance.from.ref?.$type);
 
         const value = `${inhetance.to.ref?.name} <|-- ${inhetance.from.ref?.name} \n`;
         result += value;
