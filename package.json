@@ -57,7 +57,7 @@
         "mermaid": "^11.10.0",
         "rollup": "^4.45.0",
         "typescript": "~5.1.6",
-        "vite": "~6.2.1",
+        "vite": "~6.4.1",
         "vitest": "~3.0.8"
     },
     "volta": {
