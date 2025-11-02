@@ -23,6 +23,8 @@ export function generateJavaScript(model: Model, filePath: string, destination: 
     return "";
 }
 
+let classAnotations = '';
+
 export function generateMermaidMd(program: Program, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.md`;
@@ -31,6 +33,7 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
         fs.mkdirSync(data.destination, { recursive: true });
     }
 
+    classAnotations = '';
     let result = "\nclassDiagram\n\n";
     program.stmts.forEach(stmt => {
         if(stmt.packageDeclaration){
@@ -66,7 +69,7 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
         }
     });
 
-
+    result += classAnotations;
     fs.writeFileSync(generatedFilePath, result);
     return result;
 }
@@ -75,6 +78,11 @@ function evalClassDefinition(classDef: ClassDef): string{
     let result = "";
 
     result += `class ${classDef.name}{\n`;
+
+    if(classDef.steriotype !== undefined){
+        classAnotations += `\n<< ${classDef.steriotype}>> ${classDef.name}\n`;
+    }
+
     // console.log("class", element.name);
     classDef.attributes.forEach((att) => {
       result += `+String ${att.name}\n`;

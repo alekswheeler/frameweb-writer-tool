@@ -5,58 +5,126 @@ import { LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
 
 let client: LanguageClient;
 
-function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri, panzoomJsUri: vscode.Uri): string {
+function getMermaidWebviewHtml(content: string, mermaidUri: vscode.Uri, panzoomUri: vscode.Uri): string {
     return `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
-            <meta charset="utf-8">
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Mermaid Diagram</title>
             <style>
                 body {
                     margin: 0;
-                    overflow: hidden;
+                    padding: 20px;
+                    font-family: Arial, sans-serif;
                 }
-                #container {
-                    width: 100vw;
-                    height: 100vh;
-                    cursor: grab;
-                }
-                .mermaid {
-                    width: max-content;
-                    margin: auto;
-                }
-                .namespace > rect {
-                    fill: #f0f0f0;
-                    stroke: #999999;
-                    rx: 6;
-                    ry: 6;
+                #mermaid-diagram {
+                    text-align: center;
                 }
             </style>
-            <script src="${mermaidJsUri}"></script>
-            <script src="${panzoomJsUri}"></script>
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    mermaid.initialize({ startOnLoad: true });
-                    const container = document.getElementById('container');
-                    panzoom(container, {
-                        smoothScroll: false,
-                        zoomSpeed: 0.065,
-                        maxZoom: 5,
-                        minZoom: 0.2
-                    });
-                });
-            </script>
         </head>
         <body>
-            <div id="container">
-                <div class="mermaid">
-                    ${content}
-                </div>
+            <div id="mermaid-diagram">
+                <pre class="mermaid">${content}</pre>
             </div>
+
+            <script src="${mermaidUri}"></script>
+            <script src="${panzoomUri}"></script>
+            <script>
+                // Inicializar o Mermaid ANTES de renderizar
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true
+                    },
+                    sequence: {
+                        useMaxWidth: true
+                    },
+                    class: {
+                        useMaxWidth: true,
+                        htmlLabels: true
+                    }
+                });
+
+                // Aguardar o DOM carregar completamente
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Renderizar diagramas manualmente se necessário
+                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                    
+                    // Configurar pan/zoom após renderização
+                    setTimeout(() => {
+                        const diagramContainer = document.querySelector('#mermaid-diagram');
+                        if (diagramContainer && typeof panzoom !== 'undefined') {
+                            panzoom(diagramContainer, {
+                                maxZoom: 5,
+                                minZoom: 0.1,
+                                contain: 'outside'
+                            });
+                        }
+                    }, 500);
+                });
+            </script>
         </body>
         </html>
     `;
 }
+
+// function getMermaidWebviewHtml(content: string, mermaidJsUri: vscode.Uri, panzoomJsUri: vscode.Uri): string {
+//     return `
+//         <!DOCTYPE html>
+//         <html>
+//         <head>
+//             <meta charset="utf-8">
+//             <style>
+//                 body {
+//                     margin: 0;
+//                     overflow: hidden;
+//                 }
+//                 #container {
+//                     width: 100vw;
+//                     height: 100vh;
+//                     cursor: grab;
+//                 }
+//                 .mermaid {
+//                     width: max-content;
+//                     margin: auto;
+//                 }
+//                 .namespace > rect {
+//                     fill: #f0f0f0;
+//                     stroke: #999999;
+//                     rx: 6;
+//                     ry: 6;
+//                 }
+//             </style>
+//             <script src="${mermaidJsUri}"></script>
+//             <script src="${panzoomJsUri}"></script>
+//             <script>
+//                 window.addEventListener('DOMContentLoaded', () => {
+//                     mermaid.initialize({ startOnLoad: true });
+//                     const container = document.getElementById('container');
+//                     panzoom(container, {
+//                         smoothScroll: false,
+//                         zoomSpeed: 0.065,
+//                         maxZoom: 5,
+//                         minZoom: 0.2
+//                     });
+//                 });
+//             </script>
+//         </head>
+//         <body>
+//             <div id="container">
+//                 <div class="mermaid">
+//                     ${content}
+//                 </div>
+//             </div>
+//         </body>
+//         </html>
+//     `;
+// }
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {

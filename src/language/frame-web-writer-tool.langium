@@ -13,25 +13,28 @@ FileImport:
 ImportSpec:
     className=[ClassDef:ID] ('as' alias=ID)?; 
 
+// something here to show
+PackageType returns string:
+    'controller'    |
+    'service'       |
+    'domain'        |
+    'view'          |
+    'persistence';
+
 PackageDeclaration:
+    ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
         classes+=ClassDef*
         relations+=RelationDefinition*
     '}';
 
-// AppTier:
-//     'Application' '{' 
-//         classes+=ClassDef*
-//         relations+=RelationDefinition*
-//     '}';
+// Estereótipos gerais (*podem não ser tão gerais assim)
 
-// NaviTier:
-//     'Navigation' classes+=ClassDef;
+ClassSteriotype returns string:
+    'transient' | 'mapped'| 'persistent';
 
-// PersTier:
-//     'Persistence' classes+=ClassDef;
-
-// ==================================
+AttributeSteriotype returns string:
+    'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
 
 Model:
     (Page | ClassDef | RelationDefinition);
@@ -40,9 +43,11 @@ Page:
     'Page' name=ID;
 
 ClassDef:
+    ('@' steriotype=ClassSteriotype)?
     'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:
+//    ('<<' steriotype=AttributeSteriotype '>>')?
    name=ID ':' type=TypeRef ',';
 
 TypeRef:
