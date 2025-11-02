@@ -1,5 +1,6 @@
 import Person, Address from "./medical-core.fwt";
 
+@view
 Package HospitalStaff {
     Class Employee {
         employeeId: string,
@@ -8,12 +9,14 @@ Package HospitalStaff {
         workAddress: Address,
     }
     
+    @persistent
     Class Doctor {
         licenseNumber: string,
         specialization: string,
         yearsOfExperience: number,
     }
     
+    @mapped
     Class Nurse {
         certificationLevel: string,
         department: string,
