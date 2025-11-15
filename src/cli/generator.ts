@@ -1,9 +1,7 @@
-import { Model, ClassDef, PackageDeclaration, Program, InheritanceRelation, RelationBlock, RelationType, RelationDefinition, Page } from '../language/generated/ast.js';
-import { expandToNode, joinToNode, toString } from 'langium/generate';
+import { Model, ClassDef, Program, RelationType, RelationDefinition, Page, PrimitiveType, CustomType } from '../language/generated/ast.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { extractAstNode, extractDestinationAndName } from './cli-util.js';
-import { AstUtils } from 'langium';
+import { extractDestinationAndName } from './cli-util.js';
 
 export function generateJavaScript(model: Model, filePath: string, destination: string | undefined): string {
     // const data = extractDestinationAndName(filePath, destination);
@@ -59,12 +57,10 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
 
                 if (x.$type === Page) {
                 }
-                if (x.$type === ClassDef) {
+                if (x.$type === ClassDef)
                     result += evalClassDefinition(x);
-                }
-                if (x.$type === RelationDefinition) {
+                if (x.$type === RelationDefinition)
                     result += evalRelationDefinition(x);
-                }
             }
         }
     });
@@ -85,7 +81,13 @@ function evalClassDefinition(classDef: ClassDef): string{
 
     // console.log("class", element.name);
     classDef.attributes.forEach((att) => {
-      result += `+String ${att.name}\n`;
+      let attribute = att.type;
+      if(attribute.$type === PrimitiveType){
+          result += `${attribute.type} ${att.name}\n`;
+      } else if (attribute.$type === CustomType){
+          let customType = att.type as CustomType;
+          result += `${customType.type.$refText} ${att.name}\n`;
+      }
       // console.log(element.name, ": +String",att.name)
     });
     // console.log()
