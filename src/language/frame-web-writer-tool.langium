@@ -45,7 +45,7 @@ Page:
 
 // todo: table=name
 ClassDef:
-    ('@' steriotype=ClassSteriotype)?
+    ('@' stereotype=ClassSteriotype)?
     'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:

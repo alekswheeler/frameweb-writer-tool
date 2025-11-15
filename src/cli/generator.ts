@@ -75,8 +75,8 @@ function evalClassDefinition(classDef: ClassDef): string{
 
     result += `class ${classDef.name}{\n`;
 
-    if(classDef.steriotype !== undefined){
-        classAnotations += `\n<< ${classDef.steriotype}>> ${classDef.name}\n`;
+    if(classDef.stereotype !== undefined){
+        classAnotations += `\n<< ${classDef.stereotype}>> ${classDef.name}\n`;
     }
 
     // console.log("class", element.name);
