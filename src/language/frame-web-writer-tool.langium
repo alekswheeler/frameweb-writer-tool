@@ -13,7 +13,6 @@ FileImport:
 ImportSpec:
     className=[ClassDef:ID] ('as' alias=ID)?; 
 
-// something here to show
 PackageType returns string:
     'controller'    |
     'service'       |
@@ -28,13 +27,15 @@ PackageDeclaration:
         relations+=RelationDefinition*
     '}';
 
-// Estereótipos gerais (*podem não ser tão gerais assim)
-
 ClassSteriotype returns string:
-    'transient' | 'mapped'| 'persistent';
+    'transient' | 'mapped'| 'persistent' // Domain Model
+    | 'page' | 'template' | 'form' | 'binary' // View Model
+;
 
 AttributeSteriotype returns string:
     'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
+
+//todo: Attribute constraints
 
 Model:
     (Page | ClassDef | RelationDefinition);
@@ -42,6 +43,7 @@ Model:
 Page:
     'Page' name=ID;
 
+// todo: table=name
 ClassDef:
     ('@' steriotype=ClassSteriotype)?
     'Class' name=ID '{' attributes+=Attribute* '}';
@@ -53,6 +55,7 @@ Attribute:
 TypeRef:
     PrimitiveType | CustomType;
 
+// todo: constraint de herança
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
