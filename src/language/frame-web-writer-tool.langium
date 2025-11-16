@@ -49,7 +49,7 @@ ClassDef:
     'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:
-//    ('<<' steriotype=AttributeSteriotype '>>')?
+   ('@' steriotype=AttributeSteriotype)?
    name=ID ':' type=TypeRef ',';
 
 TypeRef:
