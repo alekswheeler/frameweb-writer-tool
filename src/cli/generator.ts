@@ -82,11 +82,18 @@ function evalClassDefinition(classDef: ClassDef): string{
     // console.log("class", element.name);
     classDef.attributes.forEach((att) => {
       let attribute = att.type;
+      let stereotype = "";
+
+      if(att.steriotype){
+        // stereotype = `#123; ${att.steriotype} #125;` //todo: bracket code
+        stereotype = `<< ${att.steriotype} >>`
+      }
+
       if(attribute.$type === PrimitiveType){
-          result += `${attribute.type} ${att.name}\n`;
+          result += `${stereotype} ${attribute.type} : ${att.name}\n`;
       } else if (attribute.$type === CustomType){
           let customType = att.type as CustomType;
-          result += `${customType.type.$refText} ${att.name}\n`;
+          result += `${customType.type.$refText} : ${att.name}\n`;
       }
       // console.log(element.name, ": +String",att.name)
     });
