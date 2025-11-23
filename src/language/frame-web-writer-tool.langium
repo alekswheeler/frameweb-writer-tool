@@ -50,7 +50,8 @@ ClassDef:
 
 Attribute:
    ('@' steriotype=AttributeSteriotype)?
-   name=ID ':' type=TypeRef ',';
+    type=TypeRef ':'
+    name=ID ',';
 
 TypeRef:
     PrimitiveType | CustomType;
