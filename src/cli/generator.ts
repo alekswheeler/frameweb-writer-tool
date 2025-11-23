@@ -85,16 +85,26 @@ function evalClassDefinition(classDef: ClassDef): string{
       let stereotype = "";
 
       if(att.steriotype){
-        // stereotype = `#123; ${att.steriotype} #125;` //todo: bracket code
         stereotype = `<< ${att.steriotype} >>`
       }
 
       if(attribute.$type === PrimitiveType){
-          result += `${stereotype} ${attribute.type} : ${att.name}\n`;
+          result += `${stereotype} ${attribute.type} : ${att.name} `;
       } else if (attribute.$type === CustomType){
           let customType = att.type as CustomType;
-          result += `${customType.type.$refText} : ${att.name}\n`;
+          result += `${customType.type.$refText} : ${att.name} `;
       }
+    // attribute constraints (if any)
+    const constraints = (att as any).constraints as Array<any> | undefined;
+    if (constraints && constraints.length > 0) {
+        const cs = constraints.map(c => {
+            if (c.value === undefined) return `${c.name}`;
+            return `${c.name}=${c.value}`;
+        }).join(', ');
+        result += ` #123; ${cs} #125;\n`;
+    } else {
+        result += `\n`;
+    }
       // console.log(element.name, ": +String",att.name)
     });
     // console.log()

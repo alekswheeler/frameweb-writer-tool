@@ -49,9 +49,9 @@ ClassDef:
     'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:
-   ('@' steriotype=AttributeSteriotype)?
-    type=TypeRef ':'
-    name=ID ',';
+    ('@' steriotype=AttributeSteriotype)?
+     type=TypeRef ':'
+     name=ID ( '{' constraints+=AttributeConstraint (',' constraints+=AttributeConstraint)* '}')? ',';
 
 TypeRef:
     PrimitiveType | CustomType;
@@ -91,6 +91,11 @@ PrimitiveType:
 
 CustomType:
     type=[ClassDef : QualifiedName];
+
+// Attribute constraints: common UML-like constraints such as
+// table=name, size=value, scale=value, not null, unique, default="...", etc.
+AttributeConstraint:
+    name=ID ('=' value=(ID | INT | STRING))?;
 
 QualifiedName returns string:
     ID ('.' ID)*;
