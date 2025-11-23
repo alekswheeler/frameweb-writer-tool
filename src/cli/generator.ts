@@ -160,12 +160,12 @@ function evalRelationDefinition(association: RelationDefinition): string{
                     .replace("[", '"')
                     .replace("]", '"');
 
-            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from}\n`;
+            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from} `;
 
-            if (relationName !== undefined) {
-                result += ` : ${relationName} \n`;
-            }
-            });
+            if (relationName !== undefined) result += ` : ${relationName} \n`;
+            else result += "\n";
+            
+        });
     }
     return result;
 }
