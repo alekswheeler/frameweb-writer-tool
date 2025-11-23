@@ -48,6 +48,9 @@ export class FrameWebWriterToolValidator {
                         case 'controller':
                         case 'service':
                         case 'persistence':
+                            if(!viewStereotype.includes(pClass.stereotype)){
+                                accept('error', 'Invalid stereotype.', { node: pClass, property: 'stereotype' });
+                            }
                             break;
                         default: break;
                     }
