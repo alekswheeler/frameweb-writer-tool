@@ -1,0 +1,24 @@
+Package MedicalCore {
+    Class Person {
+        string: firstName,
+        string: lastName,
+        string: birthDate,
+        string: gender,
+        @id 
+        string: socialSecurityNumber {size=1,notnull},
+        Address: endereco,
+    }
+    
+    Class Address {
+        string: _street,
+        string: city,
+        string: state,
+        string: zipCode,
+    }
+    
+    Class MedicalRecord {
+        string: recordId,
+        string: createdDate,
+        string: lastUpdated,
+    }
+}
