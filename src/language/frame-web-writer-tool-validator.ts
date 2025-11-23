@@ -53,6 +53,13 @@ export class FrameWebWriterToolValidator {
                     }
                 }
             });
+        } else {
+            let pClasses = packageDef.classes;
+            pClasses.forEach(pClass => {
+                if(pClass.stereotype) {
+                    accept('error', 'You must define a package stereotype', { node: pClass, property: 'stereotype' });
+                }
+            });
         }
     }
 }
