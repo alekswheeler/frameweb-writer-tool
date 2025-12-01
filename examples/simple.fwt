@@ -1,0 +1,54 @@
+// Modelo de Domínio do pacote _controleusuario_ do Portal do LabES
+// https://nemo.inf.ufes.br/wp-content/papercite-data/pdf/souza-masterthesis07.pdf
+
+@domain
+Package ControleUsuario {
+    Class Usuario {
+        string: nome {notnull},
+        string: dtNascimento {precision=date},
+        string: sexo {size=1},
+        string: instituicao,
+        string: profissao,
+        string: endereco,
+        string: telefoneContato,
+        string: email {notnull},
+        string: login {notnull, size=20},
+        string: senha {notnull, size=20},
+    }
+    
+    Class Escolaridade {
+        string: nome {notnull}, 
+    }
+
+    Class TipoUsuario {
+        string: nome {notnull},
+        string: descricao,
+    }
+
+    Class Area {
+        string: nome,
+        string: descricao,
+    }
+
+    Class Funcionalidade{
+        string: nome,
+        string: descricao,
+    }
+
+    Association {
+        Usuario [*] -> [0..1] Escolaridade
+        Usuario [*] -> [1] TipoUsuario
+    }
+
+    Association {
+        Funcionalidade [*] -> [1..*] TipoUsuario
+    }
+
+    Agregation subareas {
+        Area [0..1] -> [*] Area
+    }
+
+    Association areasDeInteresse {
+        Usuario [*] -> [0..*] Area
+    }
+}
