@@ -1,9 +1,7 @@
-import { Model, ClassDef, PackageDeclaration, Program, InheritanceRelation, RelationBlock, RelationType, RelationDefinition, Page } from '../language/generated/ast.js';
-import { expandToNode, joinToNode, toString } from 'langium/generate';
+import { Model, ClassDef, Program, RelationType, RelationDefinition, Page, PrimitiveType, CustomType } from '../language/generated/ast.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { extractAstNode, extractDestinationAndName } from './cli-util.js';
-import { AstUtils } from 'langium';
+import { extractDestinationAndName } from './cli-util.js';
 
 export function generateJavaScript(model: Model, filePath: string, destination: string | undefined): string {
     // const data = extractDestinationAndName(filePath, destination);
@@ -23,6 +21,8 @@ export function generateJavaScript(model: Model, filePath: string, destination: 
     return "";
 }
 
+let classAnotations = '';
+
 export function generateMermaidMd(program: Program, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.md`;
@@ -31,6 +31,7 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
         fs.mkdirSync(data.destination, { recursive: true });
     }
 
+    classAnotations = '';
     let result = "\nclassDiagram\n\n";
     program.stmts.forEach(stmt => {
         if(stmt.packageDeclaration){
@@ -56,17 +57,15 @@ export function generateMermaidMd(program: Program, filePath: string, destinatio
 
                 if (x.$type === Page) {
                 }
-                if (x.$type === ClassDef) {
+                if (x.$type === ClassDef)
                     result += evalClassDefinition(x);
-                }
-                if (x.$type === RelationDefinition) {
+                if (x.$type === RelationDefinition)
                     result += evalRelationDefinition(x);
-                }
             }
         }
     });
 
-
+    result += classAnotations;
     fs.writeFileSync(generatedFilePath, result);
     return result;
 }
@@ -75,9 +74,37 @@ function evalClassDefinition(classDef: ClassDef): string{
     let result = "";
 
     result += `class ${classDef.name}{\n`;
+
+    if(classDef.stereotype !== undefined){
+        classAnotations += `\n<< ${classDef.stereotype} >> ${classDef.name}\n`;
+    }
+
     // console.log("class", element.name);
     classDef.attributes.forEach((att) => {
-      result += `+String ${att.name}\n`;
+      let attribute = att.type;
+      let stereotype = "";
+
+      if(att.steriotype){
+        stereotype = `<< ${att.steriotype} >>`
+      }
+
+      if(attribute.$type === PrimitiveType){
+          result += `${stereotype} ${attribute.type} : ${att.name} `;
+      } else if (attribute.$type === CustomType){
+          let customType = att.type as CustomType;
+          result += `${customType.type.$refText} : ${att.name} `;
+      }
+    // attribute constraints (if any)
+    const constraints = (att as any).constraints as Array<any> | undefined;
+    if (constraints && constraints.length > 0) {
+        const cs = constraints.map(c => {
+            if (c.value === undefined) return `${c.name}`;
+            return `${c.name}=${c.value}`;
+        }).join(', ');
+        result += ` #123; ${cs} #125;\n`;
+    } else {
+        result += `\n`;
+    }
       // console.log(element.name, ": +String",att.name)
     });
     // console.log()
@@ -133,12 +160,12 @@ function evalRelationDefinition(association: RelationDefinition): string{
                     .replace("[", '"')
                     .replace("]", '"');
 
-            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from}\n`;
+            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from} `;
 
-            if (relationName !== undefined) {
-                result += ` : ${relationName} \n`;
-            }
-            });
+            if (relationName !== undefined) result += ` : ${relationName} \n`;
+            else result += "\n";
+            
+        });
     }
     return result;
 }

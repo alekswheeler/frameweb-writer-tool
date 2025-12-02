@@ -1,22 +1,22 @@
 Package MedicalCore {
     Class Person {
-        firstName: string,
-        lastName: string,
-        birthDate: string,
-        gender: string,
-        socialSecurityNumber: string,
+        string: firstName,
+        string: lastName,
+        string: birthDate,
+        string: gender,
+        @id string: socialSecurityNumber {notnull},
     }
     
     Class Address {
-        street: string,
-        city: string,
-        state: string,
-        zipCode: string,
+        string: street,
+        string: city,
+        string: state,
+        string: zipCode,
     }
     
     Class MedicalRecord {
-        recordId: string,
-        createdDate: string,
-        lastUpdated: string,
+        @id number: recordId {notnull},
+        string: createdDate,
+        string: lastUpdated,
     }
 }

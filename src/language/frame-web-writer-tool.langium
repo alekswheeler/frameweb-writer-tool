@@ -13,25 +13,29 @@ FileImport:
 ImportSpec:
     className=[ClassDef:ID] ('as' alias=ID)?; 
 
+PackageType returns string:
+    'controller'    |
+    'service'       |
+    'domain'        |
+    'view'          |
+    'persistence';
+
 PackageDeclaration:
+    ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
         classes+=ClassDef*
         relations+=RelationDefinition*
     '}';
 
-// AppTier:
-//     'Application' '{' 
-//         classes+=ClassDef*
-//         relations+=RelationDefinition*
-//     '}';
+ClassSteriotype returns string:
+    'transient' | 'mapped'| 'persistent' // Domain Model
+    | 'page' | 'template' | 'form' | 'binary' // View Model
+;
 
-// NaviTier:
-//     'Navigation' classes+=ClassDef;
+AttributeSteriotype returns string:
+    'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
 
-// PersTier:
-//     'Persistence' classes+=ClassDef;
-
-// ==================================
+//todo: Attribute constraints
 
 Model:
     (Page | ClassDef | RelationDefinition);
@@ -39,15 +43,20 @@ Model:
 Page:
     'Page' name=ID;
 
+// todo: table=name
 ClassDef:
+    ('@' stereotype=ClassSteriotype)?
     'Class' name=ID '{' attributes+=Attribute* '}';
 
 Attribute:
-   name=ID ':' type=TypeRef ',';
+    ('@' steriotype=AttributeSteriotype)?
+     type=TypeRef ':'
+     name=ID ( '{' constraints+=AttributeConstraint (',' constraints+=AttributeConstraint)* '}')? ',';
 
 TypeRef:
     PrimitiveType | CustomType;
 
+// todo: constraint de herança
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
@@ -82,6 +91,11 @@ PrimitiveType:
 
 CustomType:
     type=[ClassDef : QualifiedName];
+
+// Attribute constraints: common UML-like constraints such as
+// table=name, size=value, scale=value, not null, unique, default="...", etc.
+AttributeConstraint:
+    name=ID ('=' value=(ID | INT | STRING))?;
 
 QualifiedName returns string:
     ID ('.' ID)*;
