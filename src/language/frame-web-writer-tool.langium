@@ -35,8 +35,6 @@ ClassSteriotype returns string:
 AttributeSteriotype returns string:
     'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
 
-//todo: Attribute constraints
-
 Model:
     (Page | ClassDef | RelationDefinition);
 
@@ -44,14 +42,19 @@ Page:
     'Page' name=ID;
 
 // todo: table=name
+// todo: methods
 ClassDef:
     ('@' stereotype=ClassSteriotype)?
-    'Class' name=ID '{' attributes+=Attribute* '}';
+    'Class' name=ID '{' attributes+=Attribute* methods+=Method* '}';
 
 Attribute:
     ('@' steriotype=AttributeSteriotype)?
-     type=TypeRef ':'
-     name=ID ( '{' constraints+=AttributeConstraint (',' constraints+=AttributeConstraint)* '}')? ',';
+    type=TypeRef ':'
+    name=ID ( '{' constraints+=AttributeConstraint (',' constraints+=AttributeConstraint)* '}')? ',';
+
+Method:
+    type=TypeRef ':' 
+    name=ID  '(' ( parameters+=ID (',' parameters+=ID)* )? ')' ',';
 
 TypeRef:
     PrimitiveType | CustomType;
