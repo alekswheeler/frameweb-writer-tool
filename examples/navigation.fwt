@@ -1,0 +1,73 @@
+// exemplo de um pacote de navegação
+@view
+Package pLogin {
+
+	@page
+	Class Index {}
+
+	@form
+	Class FormLogin {
+		string: text,
+		string: password,
+	}
+
+	@page
+	Class RemindPassword{}
+
+	@form
+	Class FormRemindPassword {}
+
+	@template
+	Class Form{
+		string: errorMessage,
+		string: login,
+	}
+
+	@template Class Home {}
+
+	@template Class PasswordSent {}
+
+	Class AuthenticateUserAction {
+		string: login,
+		string: password,
+		string: errorMessage,
+		string: executeLogin(name, login, password),
+		string: executeLogout(),
+		string: executeRemindPassword(),
+	}
+
+	Composition {
+		FormLogin [1] -> Index
+		FormLogin [1] -> Form
+	}
+
+	Association methodLogin{
+		AuthenticateUserAction -> Home
+		FormLogin -> AuthenticateUserAction
+	}
+
+	Association methodRemindPassword{
+		AuthenticateUserAction -> PasswordSent
+	}
+
+	Association methodRemindPassword{
+		FormRemindPassword -> AuthenticateUserAction
+	}
+
+	Composition {
+		FormRemindPassword -> RemindPassword
+	}
+
+	Association {
+		Index -> RemindPassword
+	}
+
+	Association Logout {
+		AuthenticateUserAction -> Index
+	}
+
+	Association methodLogin{
+		AuthenticateUserAction -> Form
+	}
+
+}

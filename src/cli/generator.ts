@@ -80,7 +80,7 @@ function evalClassDefinition(classDef: ClassDef): string{
     }
 
     // console.log("class", element.name);
-    classDef.attributes.forEach((att) => {
+    classDef.attributes?.forEach((att) => {
       let attribute = att.type;
       let stereotype = "";
 
@@ -107,7 +107,19 @@ function evalClassDefinition(classDef: ClassDef): string{
     }
       // console.log(element.name, ": +String",att.name)
     });
-    // console.log()
+
+    classDef.methods?.forEach((mtd)=>{
+        let mtdType = mtd.type;
+
+        if(mtdType.$type === PrimitiveType){
+            result += `${mtdType.type} : ${mtd.name} `;
+        } else if (mtdType.$type === CustomType){
+            let customType = mtd.type as CustomType;
+            result += `${customType.type.$refText} : ${mtd.name} `;
+        }
+
+        result += '(' + mtd.parameters.join(', ') + ")\n";
+    });
     result += "}\n";
     return result;
 }
