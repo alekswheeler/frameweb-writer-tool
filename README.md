@@ -1,6 +1,6 @@
 # frameweb-writer-tool
 
-A DSL for generating web applications with framework-agnostic code generation.
+A DSL for designing web applications using UML patterns from the [frameweb](https://nemo.inf.ufes.br/en/projetos/frameweb/) methodology. 
 
 ## Quick Start
 
@@ -15,16 +15,14 @@ npm run build
 ```
 The build process uses Rollup to generate optimized code files.
 
-### 3. Generate Output
-```sh
-node ./bin/cli.js generate ./examples/application.fwt
-```
+### Run the project
 
-Choose any file from the `examples/` folder to see the generated output.
+Run the project in the debug mode shoose any file from the `examples/` folder and save the file to see the generated output diagram.
 
-## Example Usage
-```sh
-# Generate from different example files
-node ./bin/cli.js generate ./examples/simple.fwt
-node ./bin/cli.js generate ./examples/complex.fwt
-```
+## VS code extension 
+
+To use as a VS Code extension, download the .vsix file from the [releases](https://github.com/alekswheeler/frameweb-writer-tool/releases) page and install it.
+
+---
+
+To see more about the language sintax see the [wiki](https://github.com/alekswheeler/frameweb-writer-tool/wiki) page (pt-br).
