@@ -1,13 +1,14 @@
 {
     "name": "frameweb-writer-tool",
-    "description": "Please enter a brief description here",
+    "description": "linguagem de modelagem textual para o FrameWeb",
     "version": "0.0.1",
-    "files": [
-        "bin",
-        "out",
-        "src"
-    ],
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/alekswheeler/frameweb-writer-tool"
+    },
+    "homepage": "https://github.com/alekswheeler/frameweb-writer-tool/wiki",
+    "license": "MIT",
     "scripts": {
         "prep": "langium generate && npm run build",
         "build": "tsc -b tsconfig.src.json && rollup -c",
@@ -25,7 +26,8 @@
         "dev": "vite",
         "dev:debug": "vite --debug --force",
         "serve": "npm run dev",
-        "test": "vitest run"
+        "test": "vitest run",
+        "build-ext": "vsce package"
     },
     "dependencies": {
         "@codingame/monaco-vscode-editor-service-override": "~3.2.3",
@@ -36,7 +38,6 @@
         "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~3.2.3",
         "monaco-editor-wrapper": "^6.5.0",
         "monaco-languageclient": "~8.1.1",
-        "vscode": "npm:@codingame/monaco-vscode-api@~3.2.3",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
     },
@@ -57,7 +58,8 @@
         "rollup": "^4.45.0",
         "typescript": "~5.1.6",
         "vite": "~6.4.1",
-        "vitest": "~3.0.8"
+        "vitest": "~3.0.8",
+        "vscode": "^1.1.37"
     },
     "volta": {
         "node": "18.19.1",
@@ -94,6 +96,9 @@
         ]
     },
     "main": "./out/extension/main.cjs",
+    "activationEvents": [
+        "onLanguage:frame-web-writer-tool"
+    ],
     "bin": {
         "frame-web-writer-tool-cli": "./bin/cli.js"
     }
