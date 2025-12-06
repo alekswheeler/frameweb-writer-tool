@@ -42,7 +42,6 @@ Page:
     'Page' name=ID;
 
 // todo: table=name
-// todo: methods
 ClassDef:
     ('@' stereotype=ClassSteriotype)?
     'Class' name=ID '{' attributes+=Attribute* methods+=Method* '}';
@@ -59,7 +58,6 @@ Method:
 TypeRef:
     PrimitiveType | CustomType;
 
-// todo: constraint de herança
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
