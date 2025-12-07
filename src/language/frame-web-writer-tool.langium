@@ -70,11 +70,11 @@ RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=QualifiedName 
+	from=CustomType 
     cardinalityFrom=Cardinality?
     ('->' | '--') 
     cardinalityTo=Cardinality?
-    to=QualifiedName 
+    to=CustomType 
     ;
 
 Cardinality returns string:

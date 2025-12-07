@@ -172,7 +172,7 @@ function evalRelationDefinition(association: RelationDefinition): string{
                     .replace("[", '"')
                     .replace("]", '"');
 
-            result += `${x.to} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from} `;
+            result += `${x.to.type.$refText} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from.type.$refText} `;
 
             if (relationName !== undefined) result += ` : ${relationName} \n`;
             else result += "\n";

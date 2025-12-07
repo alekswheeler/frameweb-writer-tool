@@ -1,7 +1,7 @@
 {
     "name": "frameweb-writer-tool",
     "description": "linguagem de modelagem textual para o FrameWeb",
-    "version": "0.0.1",
+    "version": "1.0.1-beta",
     "type": "module",
     "repository": {
         "type": "git",
