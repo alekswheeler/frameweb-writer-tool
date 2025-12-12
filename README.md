@@ -17,12 +17,12 @@ The build process uses Rollup to generate optimized code files.
 
 ### Run the project
 
-Run the project in the debug mode shoose any file from the `examples/` folder and save the file to see the generated output diagram.
+Run the project in the debug mode choose any file from the `examples/` folder and save the file to see the generated output diagram.
 
 ## VS code extension 
 
 To use as a VS Code extension, download the .vsix file from the [releases](https://github.com/alekswheeler/frameweb-writer-tool/releases) page and install it.
-
+Select any file from the `examples/` folder and save the file to see the generated output diagram.
 ---
 
 To see more about the language sintax see the [wiki](https://github.com/alekswheeler/frameweb-writer-tool/wiki) page (pt-br).
