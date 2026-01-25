@@ -1,3 +1,4 @@
+@domain
 Package MedicalCore {
     Class Person {
         string: firstName,

@@ -33,7 +33,7 @@ Package pLogin {
 		string: errorMessage,
 		string: executeLogin(name, login, password),
 		string: executeLogout(),
-		string: executeRemindPassword(),
+		Form: executeRemindPassword(),
 	}
 
 	Composition {
