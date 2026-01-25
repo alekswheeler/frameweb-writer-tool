@@ -1,0 +1,22 @@
+//example of mapped
+
+@domain
+Package domainExample {
+
+	@mapped
+	Class ObjetoDominio {
+		string: uuid {notnull},
+		bool: equals(Object),
+		number: hashCode(),
+	}
+
+	@mapped
+	Class ObjetoPersistente{
+		@id string: identificador,
+		@version string: versao,
+	}
+
+	Inheritance {
+		ObjetoPersistente -> ObjetoDominio
+	}
+}
