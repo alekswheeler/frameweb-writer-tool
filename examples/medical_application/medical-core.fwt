@@ -1,23 +1,23 @@
 @domain
 Package MedicalCore {
     Class Person {
-        string: firstName,
-        string: lastName,
-        string: birthDate,
-        string: gender,
-        @id string: socialSecurityNumber {notnull},
+        firstName: string,
+        lastName: string,
+        birthDate: string,
+        gender: string,
+        @id socialSecurityNumber: string {notnull},
     }
     
     Class Address {
-        string: street,
-        string: city,
-        string: state,
-        string: zipCode,
+        street: string,
+        city: string,
+        state: string,
+        zipCode: string,
     }
     
     Class MedicalRecord {
-        @id number: recordId {notnull},
-        string: createdDate,
-        string: lastUpdated,
+        @id recordId: number {notnull},
+        createdDate: string,
+        lastUpdated: string,
     }
 }

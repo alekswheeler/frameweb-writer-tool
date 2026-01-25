@@ -4,35 +4,35 @@
 @domain
 Package ControleUsuario {
     Class Usuario {
-        string: nome {notnull},
-        string: dtNascimento {precision=date},
-        string: sexo {size=1},
-        string: instituicao,
-        string: profissao,
-        string: endereco,
-        string: telefoneContato,
-        string: email {notnull},
-        string: login {notnull, size=20},
-        string: senha {notnull, size=20},
+        nome: string {notnull},
+        dtNascimento: string {precision=date},
+        sexo: string {size=1},
+        instituicao: string,
+        profissao: string,
+        endereco: string,
+        telefoneContato: string,
+        email: string {notnull},
+        login: string {notnull, size=20},
+        senha: string {notnull, size=20},
     }
     
     Class Escolaridade {
-        string: nome {notnull}, 
+        nome: string {notnull}, 
     }
 
     Class TipoUsuario {
-        string: nome {notnull},
-        string: descricao,
+        nome: string {notnull},
+        descricao: string,
     }
 
     Class Area {
-        string: nome,
-        string: descricao,
+        nome: string,
+        descricao: string,
     }
 
     Class Funcionalidade{
-        string: nome,
-        string: descricao,
+        nome: string,
+        descricao: string,
     }
 
     Association {

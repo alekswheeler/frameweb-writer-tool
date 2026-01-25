@@ -3,28 +3,28 @@ import Person, Address from "./medical-core.fwt";
 @domain
 Package HospitalStaff {
     Class Employee {
-        string: employeeId,
-        string: hireDate,
-        number: salary,
-        Address: workAddress,
+        employeeId: string,
+        hireDate: string,
+        salary: number,
+        workAddress: Address,
     }
     
     @persistent
     Class Doctor {
-        string: licenseNumber,
-        string: specialization,
-        number: yearsOfExperience,
+        licenseNumber: string,
+        specialization: string,
+        yearsOfExperience: number,
     }
     
     Class Nurse {
-        string: certificationLevel,
-        string: department,
+        certificationLevel: string,
+        department: string,
     }
     
     @transient
     Class Administrator {
-        string: accessLevel,
-        string: department,
+        accessLevel: string,
+        department: string,
     }
 
     
