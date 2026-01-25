@@ -7,8 +7,8 @@ Package pLogin {
 
 	@form
 	Class FormLogin {
-		string: text,
-		string: password,
+		text: string,
+		password: string,
 	}
 
 	@page
@@ -19,8 +19,8 @@ Package pLogin {
 
 	@template
 	Class Form{
-		string: errorMessage,
-		string: login,
+		errorMessage: string,
+		login: string,
 	}
 
 	@template Class Home {}
@@ -28,12 +28,12 @@ Package pLogin {
 	@template Class PasswordSent {}
 
 	Class AuthenticateUserAction {
-		string: login,
-		string: password,
-		string: errorMessage,
-		string: executeLogin(name, login, password),
-		string: executeLogout(),
-		Form: executeRemindPassword(),
+		login: string,
+		password: string,
+		errorMessage: string,
+		executeLogin(name, login, password): string,
+		executeLogout(): string,
+		executeRemindPassword(): Form,
 	}
 
 	Composition {

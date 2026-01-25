@@ -5,15 +5,15 @@ Package domainExample {
 
 	@mapped
 	Class ObjetoDominio {
-		string: uuid {notnull},
-		bool: equals(Object),
-		number: hashCode(),
+		uuid: string {notnull},
+		equals(Object): bool,
+		hashCode(): number,
 	}
 
 	@mapped
 	Class ObjetoPersistente{
-		@id string: identificador,
-		@version string: versao,
+		@id identificador: string,
+		@version versao: string,
 	}
 
 	Inheritance {
