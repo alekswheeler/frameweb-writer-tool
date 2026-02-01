@@ -28,7 +28,7 @@ PackageDeclaration:
     '}';
 
 ClassSteriotype returns string:
-    'transient' | 'mapped'| 'persistent' // Domain Model
+    'transient' | 'mapped'| 'persistent' // Entity Model
     | 'page' | 'template' | 'form' | 'binary' // View Model
 ;
 
@@ -86,7 +86,7 @@ InheritanceRelation:
     from=[ClassDef:QualifiedName] ('->' | 'extends') to=[ClassDef:QualifiedName];
 
 RelationType:
-    associationType=('Association' | 'Agregation' | 'Composition');
+    associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
 
 PrimitiveType:
     type=('number' | 'string' | 'bool');
