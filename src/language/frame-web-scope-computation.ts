@@ -1,6 +1,18 @@
-import { DefaultScopeComputation, LangiumDocument, AstNodeDescription } from "langium";
+import {
+  DefaultScopeComputation,
+  LangiumDocument,
+  AstNodeDescription,
+} from "langium";
 import { LangiumServices } from "langium/lsp";
-import { isPackageDeclaration, isModel, isClassDef, isPage, isRelationDefinition, Program } from "./generated/ast.js";
+import {
+  isPackageDeclaration,
+  isModel,
+  isClassDef,
+  isPage,
+  isRelationDefinition,
+  Program,
+} from "./generated/ast.js";
+import chalk from "chalk";
 
 export class FrameWebScopeComputation extends DefaultScopeComputation {
   constructor(services: LangiumServices) {
@@ -8,65 +20,72 @@ export class FrameWebScopeComputation extends DefaultScopeComputation {
   }
 
   override async computeExports(
-    document: LangiumDocument
+    document: LangiumDocument,
   ): Promise<AstNodeDescription[]> {
     const program = document.parseResult.value as Program;
     const descriptions: AstNodeDescription[] = [];
-
-    // Processa todas as declarações do programa
-    for (const stmt of program.stmts) {
-      if (
-        stmt.packageDeclaration &&
-        isPackageDeclaration(stmt.packageDeclaration)
-      ) {
-        // Adiciona o próprio pacote
-        descriptions.push(
-          this.createDescription(
-            stmt.packageDeclaration,
-            stmt.packageDeclaration.name
-          )
-        );
-
-        // Processa classes dentro do pacote
-        for (const classDef of stmt.packageDeclaration.classes) {
+    try {
+      // Processa todas as declarações do programa
+      for (const stmt of program.stmts) {
+        if (
+          stmt.packageDeclaration &&
+          isPackageDeclaration(stmt.packageDeclaration)
+        ) {
+          // Adiciona o próprio pacote
           descriptions.push(
             this.createDescription(
-              classDef,
-              this.getQualifiedName(classDef.name, stmt.packageDeclaration.name)
-            )
+              stmt.packageDeclaration,
+              stmt.packageDeclaration.name,
+            ),
           );
-        }
 
-        // Processa relações dentro do pacote
-        for (const relation of stmt.packageDeclaration.relations) {
-          if (relation.name) {
+          // Processa classes dentro do pacote
+          for (const classDef of stmt.packageDeclaration.classes) {
             descriptions.push(
               this.createDescription(
-                relation,
+                classDef,
                 this.getQualifiedName(
-                  relation.name,
-                  stmt.packageDeclaration.name
-                )
-              )
+                  classDef.name,
+                  stmt.packageDeclaration.name,
+                ),
+              ),
+            );
+          }
+
+          // Processa relações dentro do pacote
+          for (const relation of stmt.packageDeclaration.relations) {
+            if (relation.name) {
+              descriptions.push(
+                this.createDescription(
+                  relation,
+                  this.getQualifiedName(
+                    relation.name,
+                    stmt.packageDeclaration.name,
+                  ),
+                ),
+              );
+            }
+          }
+        } else if (stmt.model && isModel(stmt.model)) {
+          // Processa elementos de nível superior (global scope)
+          if (isClassDef(stmt.model)) {
+            descriptions.push(
+              this.createDescription(stmt.model, stmt.model.name),
+            );
+          } else if (isPage(stmt.model)) {
+            descriptions.push(
+              this.createDescription(stmt.model, stmt.model.name),
+            );
+          } else if (isRelationDefinition(stmt.model) && stmt.model.name) {
+            descriptions.push(
+              this.createDescription(stmt.model, stmt.model.name),
             );
           }
         }
-      } else if (stmt.model && isModel(stmt.model)) {
-        // Processa elementos de nível superior (global scope)
-        if (isClassDef(stmt.model)) {
-          descriptions.push(
-            this.createDescription(stmt.model, stmt.model.name)
-          );
-        } else if (isPage(stmt.model)) {
-          descriptions.push(
-            this.createDescription(stmt.model, stmt.model.name)
-          );
-        } else if (isRelationDefinition(stmt.model) && stmt.model.name) {
-          descriptions.push(
-            this.createDescription(stmt.model, stmt.model.name)
-          );
-        }
       }
+    } catch (Err: any) {
+      var message = (Err as Error).message;
+      console.log(chalk.red(message));
     }
 
     return descriptions;
