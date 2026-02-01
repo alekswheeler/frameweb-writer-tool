@@ -167,7 +167,7 @@ function evalRelationDefinition(association: RelationDefinition): string {
         relationConnector = "<--";
         break;
       case "Dependency":
-        relationConnector = "..>";
+        relationConnector = "<..";
         break;
       default:
         break;
