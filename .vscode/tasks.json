@@ -5,8 +5,8 @@
     "tasks": [
         {
             "label": "generate",
-            "command": "bash",
-            "args": ["-c", "npm run langium:generate"],
+            "command": "npm run langium:generate",
+            // "args": ["-c", "npm run langium:generate"],
             "type": "shell",
             "detail": "Langium: Generate grammar and build the frame-web-writer-tool language",
             "icon": {
@@ -16,10 +16,10 @@
         },
         {
             "label": "build",
-            "command": "bash",
-            "args": ["-c", "npm run build"],
+            "command": "npm run build",
+            // "args": ["-c", "npm run build"],
             "type": "shell",
-            "detail": "Langium: Build the frame-web-writer-tool language",
+            // "detail": "Langium: Build the frame-web-writer-tool language",
             "icon": {
                 "color": "terminal.ansiGreen",
                 "id": "server-process"
