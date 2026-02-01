@@ -1,0 +1,19 @@
+//https://drive.google.com/file/d/1TWK3KZAbr9UQJ0FremKqXpbRhFnvmG-R/view
+Package MyPackage {
+	//dao interface
+	Class GradeRepository {}
+
+	Class GradeRepositoryImpl {}
+
+
+	//dao interface
+
+	Class ViewRepository {}
+
+	Class ViewRepositoryImpl {}
+
+	Inheritance { ViewRepositoryImpl -> ViewRepository }
+
+	Inheritance { GradeRepositoryImpl -> GradeRepository }
+
+}

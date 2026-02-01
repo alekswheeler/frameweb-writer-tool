@@ -1,0 +1,48 @@
+//https://nemo.inf.ufes.br/wp-content/papercite-data/pdf/hoppe-et-al-webmedia23.pdf
+@view
+Package Form_Navigation {
+
+	@page
+	Class Index{ }
+
+	@form
+	Class RegistrationForm {
+		name: string,
+		email: string,
+		password: string,
+		repeatPassword: string,
+	}
+
+	@page
+	Class Succes { name: string, }
+
+	@page Class EmailInUse { email: string, }
+
+	Composition {
+		RegistrationForm -> Index
+	}
+}
+
+Package Controller {
+	Class Author {
+		name: string,
+		email: string,
+		password: string,
+	}
+
+	Class RegistrationController {
+		author: Author,
+		repeatPassword: string,
+		register(): string,
+	}
+}
+
+Association depends {
+	RegistrationForm ->	RegistrationController 
+}
+
+
+Association depends {
+	RegistrationController -> Succes
+	RegistrationController -> EmailInUse 
+}

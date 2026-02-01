@@ -1,0 +1,70 @@
+//https://drive.google.com/file/d/1TWK3KZAbr9UQJ0FremKqXpbRhFnvmG-R/view
+@domain
+Package MyPackage {
+
+	Class Grade {
+		value: number,
+	}
+
+	Class Student {
+		name: string {collum=full_name},
+		email: string {size=100},
+		password: string,
+	}
+	
+	Class ReviewDecision {}
+	
+	Class Review {
+		text: string, 
+		decision: ReviewDecision,
+		@transient pending: bool,
+		reviewDate: string {precision=timestamp},
+		operation1(text, review): string, 
+	}
+
+	Class Workshop { 
+		submissionDeadLine: string {precision=Date},
+		reviewDeadLine: string {precision=Date},
+	}
+
+	Class GradedWorkshop {	}
+
+	Class CompetitionWorkshop { }
+
+	@transient
+	Class Statistics {
+		submissions: number,
+		totalReviews: number,
+		pendingReviews: number,
+	}
+
+	Class Submission { 
+		ttile: string,
+		keyword: string,
+		abstract: string,
+		pdfFile: string,
+		submissionDate: string,
+	}
+
+    // RELATIONS
+
+	Association {
+		//todo: podia verificar esse ciclo
+		Student [*] -> [*] Workshop //todo: é apenas link
+		// Workshop [*] -> [*] Student
+		Grade [*] -> [1] GradedWorkshop //todo: é apenas link
+		Review [*] -> [1] Submission //todo: é apenas link
+		Workshop [1] -> [*] Submission //todo: é apenas link
+	}
+
+	Association { 
+		CompetitionWorkshop [*] -> [*] Student //ok
+		Submission [*] -> Student //ok
+		Workshop [1] -> [0..1] Statistics // ok
+		Review [*] -> [1] Student // ok
+		Grade [*] -> [1] Student // ok
+	}
+
+	Inheritance {  GradedWorkshop -> Workshop } //ok
+	Inheritance {  CompetitionWorkshop -> Workshop } //ok
+}

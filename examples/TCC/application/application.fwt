@@ -1,0 +1,45 @@
+//https://drive.google.com/file/d/1TWK3KZAbr9UQJ0FremKqXpbRhFnvmG-R/view
+
+@service
+Package MyPackage {
+	//service interface
+	Class WorkshopService {}
+	
+	//service interface
+	Class ReviewService {}
+
+	//service interface
+	Class StudentService {}
+
+	//service interface
+	Class SubmissionService {}
+
+	//service interface
+	Class GradeService {}
+
+	Class WorkshopServiceImpl {}
+
+	Class ReviewServiceImpl {}
+
+	Class StudentServiceImpl {}
+
+	Class SubmissionServiceImpl {}
+
+	Class GradeServiceImpl {}
+
+	Inheritance{
+		WorkshopServiceImpl -> WorkshopService
+	}
+	Inheritance{
+		ReviewServiceImpl -> ReviewService
+	}	
+	Inheritance{
+		StudentServiceImpl -> StudentService
+	}
+	Inheritance{
+		SubmissionServiceImpl -> SubmissionService
+	}
+	Inheritance{
+		GradeServiceImpl -> GradeService
+	}
+}
