@@ -7,6 +7,7 @@ import {
   Page,
   PrimitiveType,
   CustomType,
+  Relation,
 } from "../language/generated/ast.js";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -143,20 +144,15 @@ function evalClassDefinition(classDef: ClassDef): string {
 
 function evalRelationDefinition(association: RelationDefinition): string {
   let result = "";
-  if (association.inheritance) {
-    const inhetance = association.inheritance;
 
-    const value = `${inhetance.to.ref?.name} <|-- ${inhetance.from.ref?.name} \n`;
-    result += value;
-  }
-  if (association.block) {
+  if (association.relationType) {
     let relation = association;
 
     let relationName = relation.name;
     let relationType = relation.relationType as RelationType;
     let relationTypeName = relationType.associationType;
 
-    let relations = relation.block?.relations;
+    let relations = relation.block?.relations as Relation[];
 
     let relationConnector = "";
 
@@ -192,6 +188,11 @@ function evalRelationDefinition(association: RelationDefinition): string {
 
       if (relationName !== undefined) result += ` : ${relationName} \n`;
       else result += "\n";
+    });
+  } else {
+    let relations = association.block?.relations;
+    relations?.forEach((x) => {
+      result += `${x.to.type.$refText}  <|-- ${x.from.type.$refText}\n`;
     });
   }
   return result;

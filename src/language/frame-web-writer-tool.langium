@@ -64,7 +64,7 @@ RelationDefinition:
         block=RelationBlock? 
     '}' | 
     'Inheritance' '{' 
-        inheritance=InheritanceRelation
+        block=InheritanceRelationBlock?
     '}';
 
 RelationBlock:
@@ -83,7 +83,13 @@ Cardinality returns string:
     ;
 
 InheritanceRelation:
-    from=[ClassDef:QualifiedName] ('->' | 'extends') to=[ClassDef:QualifiedName];
+	from=CustomType 
+    ('->' | 'extends') 
+    to=CustomType 
+    ;
+
+InheritanceRelationBlock: 
+    (relations+=InheritanceRelation)+;    
 
 RelationType:
     associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
