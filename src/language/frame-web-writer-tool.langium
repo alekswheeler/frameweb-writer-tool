@@ -23,8 +23,7 @@ PackageType returns string:
 PackageDeclaration:
     ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
-        classes+=ClassDef*
-        relations+=RelationDefinition*
+        (classes+=ClassDef | relations+=RelationDefinition)*
     '}';
 
 ClassSteriotype returns string:
