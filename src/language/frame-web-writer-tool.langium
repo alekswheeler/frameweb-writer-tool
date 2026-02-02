@@ -23,12 +23,11 @@ PackageType returns string:
 PackageDeclaration:
     ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
-        classes+=ClassDef*
-        relations+=RelationDefinition*
+        (classes+=ClassDef | relations+=RelationDefinition)*
     '}';
 
 ClassSteriotype returns string:
-    'transient' | 'mapped'| 'persistent' // Domain Model
+    'transient' | 'mapped'| 'persistent' // Entity Model
     | 'page' | 'template' | 'form' | 'binary' // View Model
 ;
 
@@ -64,7 +63,7 @@ RelationDefinition:
         block=RelationBlock? 
     '}' | 
     'Inheritance' '{' 
-        inheritance=InheritanceRelation
+        block=InheritanceRelationBlock?
     '}';
 
 RelationBlock:
@@ -83,10 +82,16 @@ Cardinality returns string:
     ;
 
 InheritanceRelation:
-    from=[ClassDef:QualifiedName] ('->' | 'extends') to=[ClassDef:QualifiedName];
+	from=CustomType 
+    ('->' | 'extends') 
+    to=CustomType 
+    ;
+
+InheritanceRelationBlock: 
+    (relations+=InheritanceRelation)+;    
 
 RelationType:
-    associationType=('Association' | 'Agregation' | 'Composition');
+    associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
 
 PrimitiveType:
     type=('number' | 'string' | 'bool');
