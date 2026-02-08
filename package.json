@@ -2,7 +2,7 @@
     "name": "frameweb-writer-tool",
     "description": "linguagem de modelagem textual para o FrameWeb",
     "publisher": "alekswheeler",
-    "version": "2.1.0-beta",
+    "version": "2.2.0-beta",
     "type": "module",
     "repository": {
         "type": "git",
