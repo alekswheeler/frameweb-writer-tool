@@ -1,42 +1,71 @@
-import { type Module, inject } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
-import { FrameWebWriterToolGeneratedModule, FrameWebWriterToolGeneratedSharedModule } from './generated/module.js';
-import { FrameWebWriterToolValidator, registerValidationChecks } from './frame-web-writer-tool-validator.js';
-import { FrameWebScopeComputation } from './frame-web-scope-computation.js';
-import { FrameWebScopeProvider } from './frame-web-scope-provider.js';
+import { type Module, inject } from "langium";
+import {
+  createDefaultModule,
+  createDefaultSharedModule,
+  type DefaultSharedModuleContext,
+  type LangiumServices,
+  type LangiumSharedServices,
+  type PartialLangiumServices,
+} from "langium/lsp";
+import {
+  FrameWebWriterToolGeneratedModule,
+  FrameWebWriterToolGeneratedSharedModule,
+} from "./generated/module.js";
+import {
+  FrameWebWriterToolValidator,
+  registerValidationChecks,
+} from "./frame-web-writer-tool-validator.js";
+import { FrameWebScopeComputation } from "./frame-web-scope-computation.js";
+import { FrameWebScopeProvider } from "./frame-web-scope-provider.js";
+import { ConfigService } from "./frame-web-config-service.js";
+import { FramWebWriterToolDocumentValidator } from "./FWT_DocumentValidator.js";
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type FrameWebWriterToolAddedServices = {
-    validation: {
-        FrameWebWriterToolValidator: FrameWebWriterToolValidator
-    },
-    references: {
-        ScopeComputation: FrameWebScopeComputation,
-        ScopeProvider: FrameWebScopeProvider
-    }
-}
+  validation: {
+    FrameWebWriterToolValidator: FrameWebWriterToolValidator;
+    DocumentValidator: FramWebWriterToolDocumentValidator;
+  };
+  references: {
+    ScopeComputation: FrameWebScopeComputation;
+    ScopeProvider: FrameWebScopeProvider;
+  };
+  configuration: {
+    FrameWebWriterToolConfig: ConfigService;
+  };
+};
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type FrameWebWriterToolServices = LangiumServices & FrameWebWriterToolAddedServices
+export type FrameWebWriterToolServices = LangiumServices &
+  FrameWebWriterToolAddedServices;
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
  * declared custom services. The Langium defaults can be partially specified to override only
  * selected services, while the custom services must be fully specified.
  */
-export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, PartialLangiumServices & FrameWebWriterToolAddedServices> = {
-    validation: {
-        FrameWebWriterToolValidator: () => new FrameWebWriterToolValidator()
-    },
-    references: {
-        ScopeComputation: (services) => new FrameWebScopeComputation(services),
-        ScopeProvider: (services) => new FrameWebScopeProvider(services)
-    }
+export const FrameWebWriterToolModule: Module<
+  FrameWebWriterToolServices,
+  PartialLangiumServices & FrameWebWriterToolAddedServices
+> = {
+  validation: {
+    FrameWebWriterToolValidator: (services) =>
+      new FrameWebWriterToolValidator(services),
+    DocumentValidator: (services) =>
+      new FramWebWriterToolDocumentValidator(services),
+  },
+  references: {
+    ScopeComputation: (services) => new FrameWebScopeComputation(services),
+    ScopeProvider: (services) => new FrameWebScopeProvider(services),
+  },
+  configuration: {
+    FrameWebWriterToolConfig: () => new ConfigService(),
+  },
 };
 
 /**
@@ -54,25 +83,27 @@ export const FrameWebWriterToolModule: Module<FrameWebWriterToolServices, Partia
  * @param context Optional module context with the LSP connection
  * @returns An object wrapping the shared services and the language-specific services
  */
-export function createFrameWebWriterToolServices(context: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    FrameWebWriterTool: FrameWebWriterToolServices
+export function createFrameWebWriterToolServices(
+  context: DefaultSharedModuleContext,
+): {
+  shared: LangiumSharedServices;
+  FrameWebWriterTool: FrameWebWriterToolServices;
 } {
-    const shared = inject(
-        createDefaultSharedModule(context),
-        FrameWebWriterToolGeneratedSharedModule
-    );
-    const FrameWebWriterTool = inject(
-        createDefaultModule({ shared }),
-        FrameWebWriterToolGeneratedModule,
-        FrameWebWriterToolModule
-    );
-    shared.ServiceRegistry.register(FrameWebWriterTool);
-    registerValidationChecks(FrameWebWriterTool);
-    if (!context.connection) {
-        // We don't run inside a language server
-        // Therefore, initialize the configuration provider instantly
-        shared.workspace.ConfigurationProvider.initialized({});
-    }
-    return { shared, FrameWebWriterTool };
+  const shared = inject(
+    createDefaultSharedModule(context),
+    FrameWebWriterToolGeneratedSharedModule,
+  );
+  const FrameWebWriterTool = inject(
+    createDefaultModule({ shared }),
+    FrameWebWriterToolGeneratedModule,
+    FrameWebWriterToolModule,
+  );
+  shared.ServiceRegistry.register(FrameWebWriterTool);
+  registerValidationChecks(FrameWebWriterTool);
+  if (!context.connection) {
+    // We don't run inside a language server
+    // Therefore, initialize the configuration provider instantly
+    shared.workspace.ConfigurationProvider.initialized({});
+  }
+  return { shared, FrameWebWriterTool };
 }
