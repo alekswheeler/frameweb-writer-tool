@@ -56,7 +56,7 @@ Method:
     type=TypeRef ',';
 
 TypeRef:
-    PrimitiveType | CustomType;
+    typeName=[ClassDef:QualifiedName];
 
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
@@ -92,9 +92,6 @@ InheritanceRelationBlock:
 
 RelationType:
     associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
-
-PrimitiveType:
-    type=('number' | 'string' | 'bool');
 
 CustomType:
     type=[ClassDef : QualifiedName];

@@ -5,8 +5,6 @@ import {
   RelationType,
   RelationDefinition,
   Page,
-  PrimitiveType,
-  CustomType,
   Relation,
 } from "../language/generated/ast.js";
 import * as fs from "node:fs";
@@ -104,12 +102,8 @@ function evalClassDefinition(classDef: ClassDef): string {
       stereotype = `<< ${att.steriotype} >>`;
     }
 
-    if (attribute.$type === PrimitiveType) {
-      result += `${stereotype} ${attribute.type} : ${att.name} `;
-    } else if (attribute.$type === CustomType) {
-      let customType = att.type as CustomType;
-      result += `${customType.type.$refText} : ${att.name} `;
-    }
+    result += `${stereotype} ${att.type.typeName.$refText} : ${att.name} `;
+
     // attribute constraints (if any)
     const constraints = (att as any).constraints as Array<any> | undefined;
     if (constraints && constraints.length > 0) {
@@ -129,12 +123,7 @@ function evalClassDefinition(classDef: ClassDef): string {
   classDef.methods?.forEach((mtd) => {
     let mtdType = mtd.type;
 
-    if (mtdType.$type === PrimitiveType) {
-      result += `${mtdType.type} : ${mtd.name} `;
-    } else if (mtdType.$type === CustomType) {
-      let customType = mtd.type as CustomType;
-      result += `${customType.type.$refText} : ${mtd.name} `;
-    }
+    result += `${mtd.type.typeName.$refText} : ${mtd.name} `;
 
     result += "(" + mtd.parameters.join(", ") + ")\n";
   });
