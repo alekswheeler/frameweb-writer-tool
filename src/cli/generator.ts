@@ -110,7 +110,7 @@ function evalClassDefinition(classDef: ClassDef): string {
       const cs = constraints
         .map((c) => {
           if (c.value === undefined) return `${c.name}`;
-          return `${c.name}=${c.value}`;
+          return `${c.name} ${c.operator ?? "="} ${c.value}`;
         })
         .join(", ");
       result += ` #123; ${cs} #125;\n`;
