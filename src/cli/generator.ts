@@ -166,12 +166,14 @@ function evalRelationDefinition(association: RelationDefinition): string {
       let cardinalityFrom =
         x.cardinalityFrom === undefined
           ? ""
-          : x.cardinalityFrom.replace("[", '"').replace("]", '"');
+          : x.cardinalityFrom.$cstNode?.text
+              .replace("[", '"')
+              .replace("]", '"');
 
       let cardinalityTo =
         x.cardinalityTo === undefined
           ? ""
-          : x.cardinalityTo.replace("[", '"').replace("]", '"');
+          : x.cardinalityTo.$cstNode?.text.replace("[", '"').replace("]", '"');
 
       result += `${x.to.type.$refText} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from.type.$refText} `;
 
