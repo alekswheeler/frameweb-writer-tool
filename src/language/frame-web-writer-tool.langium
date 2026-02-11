@@ -28,7 +28,7 @@ PackageDeclaration:
 
 ClassSteriotype returns string:
     'transient' | 'mapped'| 'persistent' // Entity Model
-    | 'page' | 'template' | 'form' | 'binary' // View Model
+    | 'page' | 'form' | 'binary' // View Model
 ;
 
 AttributeSteriotype returns string:
@@ -77,9 +77,11 @@ Relation:
     to=CustomType 
     ;
 
-Cardinality returns string:
-    (('[' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') ']') | ('[' (INT|'*'|'n'|'m') ']'))
+Cardinality:
+    (('[' start=(DECIMAL|'*'|'n'|'m') '..' end=(DECIMAL|'*'|'n'|'m') ']') | ('[' self=(DECIMAL|'*'|'n'|'m') ']'))
     ;
+
+
 
 InheritanceRelation:
 	from=CustomType 
@@ -97,15 +99,23 @@ CustomType:
     type=[ClassDef : QualifiedName];
 
 AttributeConstraint:
-    name=ID ('=' value=(ID | INT | STRING))?;
+    name=(ID|'size') ( operator=('='|'>='|'<='|'>'|'<'|'!=') value=(DECIMAL))?
+    | name = 'precision' '=' value = ('date' | 'time' | 'timestamp')
+    | name = 'generation' '=' value=('auto'|'identity'|'none'|'sequence')
+    | name = 'notnull' | name='nullabe'
+    | name = 'column' '=' value=ID
+    ;
 
 QualifiedName returns string:
     ID ('.' ID)*;
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
-terminal INT returns number: /[0-9]+/;
+// terminal INT returns string: /[0-9]+/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
+// terminal DECIMAL returns number: /('-'?[0-9]+(?:\.[0-9]*)?)/;
+terminal DECIMAL returns number: /[+-]?[0-9]+(\.[0-9]+)?/;
+
 
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
