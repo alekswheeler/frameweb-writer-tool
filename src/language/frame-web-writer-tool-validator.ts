@@ -122,4 +122,60 @@ export class FrameWebWriterToolValidator {
       console.log(err);
     }
   }
+
+  private isValidTokenCardinality(token: string): boolean {
+    var validTokens = ["*", "n", "m"];
+    return validTokens.includes(token);
+  }
+
+  //todo: passar o property
+  private checkCardinalityProperty(
+    token: string,
+    node: Relation,
+    accept: Function,
+  ) {
+    let parsedToken = Number.parseFloat(token);
+    if (!this.isValidTokenCardinality(token)) {
+      if (!Number.isInteger(parsedToken) || parsedToken < 0) {
+        accept("error", "Multiplicity of relations must be positive integer.", {
+          node,
+        });
+      }
+    }
+  }
+
+  validateCardinality(relation: Relation, accept: ValidationAcceptor): void {
+    let token: string | undefined;
+    let parsedToken: number;
+
+    if (relation.cardinalityFrom) {
+      token = relation.cardinalityFrom.self?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityFrom.end?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityFrom.start?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+    }
+
+    if (relation.cardinalityTo) {
+      token = relation.cardinalityTo.self?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityTo.end?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityTo.start?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+    }
+  }
 }
