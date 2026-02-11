@@ -1,9 +1,12 @@
 import { type ValidationAcceptor, type ValidationChecks } from "langium";
 import {
   Attribute,
+  Cardinality,
   ClassDef,
   FrameWebWriterToolAstType,
   PackageDeclaration,
+  Relation,
+  RelationDefinition,
 } from "./generated/ast.js";
 import type { FrameWebWriterToolServices } from "./frame-web-writer-tool-module.js";
 
@@ -17,6 +20,7 @@ export function registerValidationChecks(services: FrameWebWriterToolServices) {
     ClassDef: [validator.checkClassStartsWithCapital],
     PackageDeclaration: [validator.checkClassStereotype],
     Attribute: [validator.checkCustomType],
+    Relation: [validator.validateCardinality],
   };
   registry.register(checks, validator);
 }
@@ -50,7 +54,7 @@ export class FrameWebWriterToolValidator {
     accept: ValidationAcceptor,
   ): void {
     let domainStereotype = ["transient", "mapped", "persistent"];
-    let viewStereotype = ["page", "template", "form", "binary"];
+    let viewStereotype = ["page", "form", "binary"];
     if (packageDef.pType) {
       let pClasses = packageDef.classes;
       pClasses.forEach((pClass) => {
@@ -75,7 +79,7 @@ export class FrameWebWriterToolValidator {
             case "controller":
             case "service":
             case "persistence":
-              if (!viewStereotype.includes(pClass.stereotype)) {
+              if (viewStereotype.includes(pClass.stereotype)) {
                 accept("error", "Invalid stereotype.", {
                   node: pClass,
                   property: "stereotype",
