@@ -1,12 +1,21 @@
-import { type ValidationAcceptor, type ValidationChecks } from "langium";
+import {
+  AstUtils,
+  isAstNode,
+  type ValidationAcceptor,
+  type ValidationChecks,
+} from "langium";
 import {
   Attribute,
   Cardinality,
   ClassDef,
+  FileImport,
   FrameWebWriterToolAstType,
+  ImportSpec,
+  isImportSpec,
   PackageDeclaration,
   Relation,
   RelationDefinition,
+  RelationType,
 } from "./generated/ast.js";
 import type { FrameWebWriterToolServices } from "./frame-web-writer-tool-module.js";
 
@@ -18,7 +27,10 @@ export function registerValidationChecks(services: FrameWebWriterToolServices) {
   const validator = services.validation.FrameWebWriterToolValidator;
   const checks: ValidationChecks<FrameWebWriterToolAstType> = {
     ClassDef: [validator.checkClassStartsWithCapital],
-    PackageDeclaration: [validator.checkClassStereotype],
+    PackageDeclaration: [
+      validator.checkClassStereotype,
+      validator.validateDaoInterface,
+    ],
     Attribute: [validator.checkCustomType],
     Relation: [validator.validateCardinality],
   };
@@ -180,6 +192,43 @@ export class FrameWebWriterToolValidator {
       if (token) {
         this.checkCardinalityProperty(token, relation, accept);
       }
+    }
+  }
+
+  validateDaoInterface(
+    packageDef: PackageDeclaration,
+    accept: ValidationAcceptor,
+  ): void {
+    if (packageDef.pType && packageDef.pType === "persistence") {
+      const classes = packageDef.classes;
+      classes.forEach((x) => {
+        if (!x.implements) {
+          accept(
+            "info",
+            `FrameWeb indicates the use of the DAO design pattern. It is recommended to create an interface named ${x.name}DAO`,
+            {
+              node: x,
+              property: "name",
+            },
+          );
+        }
+      });
+    }
+
+    if (packageDef.pType && packageDef.pType === "service") {
+      const classes = packageDef.classes;
+      classes.forEach((x) => {
+        if (!x.implements) {
+          accept(
+            "info",
+            `FrameWeb indicates the use of interfaces for service classes. It is recommended that ${x.name} implements an interface.`,
+            {
+              node: x,
+              property: "name",
+            },
+          );
+        }
+      });
     }
   }
 }
