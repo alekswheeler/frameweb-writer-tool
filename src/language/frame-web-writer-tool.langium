@@ -23,7 +23,7 @@ PackageType returns string:
 PackageDeclaration:
     ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
-        (classes+=ClassDef | relations+=RelationDefinition)*
+        (classes+=ClassDef | relations+=RelationDefinition | interfaces+=Interface)*
     '}';
 
 ClassSteriotype returns string:
@@ -35,7 +35,7 @@ AttributeSteriotype returns string:
     'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
 
 Model:
-    (Page | ClassDef | RelationDefinition);
+    (Page | ClassDef | RelationDefinition | Interface);
 
 Page:
     'Page' name=ID;
@@ -43,7 +43,10 @@ Page:
 // todo: table=name
 ClassDef:
     ('@' stereotype=ClassSteriotype)?
-    'Class' name=ID '{' attributes+=Attribute* methods+=Method* '}';
+    'Class' name=ID ('implements' implements=[Interface: ID])? '{' attributes+=Attribute* methods+=Method* '}' ;
+
+Interface:
+    'Interface' name=ID '{' methods+=Method* '}' ;
 
 Attribute:
     ('@' steriotype=AttributeSteriotype)?
@@ -62,7 +65,7 @@ RelationDefinition:
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
     '}' | 
-    'Inheritance' '{' 
+    inheritance=('Inheritance') '{' 
         block=InheritanceRelationBlock?
     '}';
 
@@ -70,23 +73,21 @@ RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=CustomType 
+	from=CustomType
     cardinalityFrom=Cardinality?
     ('->' | '--') 
     cardinalityTo=Cardinality?
-    to=CustomType 
+    to=CustomType
     ;
 
 Cardinality:
     (('[' start=(DECIMAL|'*'|'n'|'m') '..' end=(DECIMAL|'*'|'n'|'m') ']') | ('[' self=(DECIMAL|'*'|'n'|'m') ']'))
     ;
 
-
-
 InheritanceRelation:
-	from=CustomType 
+	from=CustomType
     ('->' | 'extends') 
-    to=CustomType 
+    to=CustomType
     ;
 
 InheritanceRelationBlock: 
