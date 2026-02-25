@@ -94,7 +94,7 @@ InheritanceRelationBlock:
     (relations+=InheritanceRelation)+;    
 
 RelationType:
-    associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
+    associationType=('Association' | 'Aggregation' | 'Composition' | 'Dependency');
 
 CustomType:
     type=[ClassDef : QualifiedName];

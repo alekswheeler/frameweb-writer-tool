@@ -189,7 +189,7 @@ function evalRelationDefinition(association: RelationDefinition): string {
       case "Composition":
         relationConnector = "*--";
         break;
-      case "Agregation":
+      case "Aggregation":
         relationConnector = "o--";
         break;
       case "Association":
