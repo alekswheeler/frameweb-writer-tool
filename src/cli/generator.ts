@@ -6,6 +6,7 @@ import {
   RelationDefinition,
   Page,
   Relation,
+  Interface,
 } from "../language/generated/ast.js";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -34,6 +35,7 @@ export function generateJavaScript(
 }
 
 let classAnotations = "";
+let classImplements = "";
 
 export function generateMermaidMd(
   program: Program,
@@ -49,6 +51,9 @@ export function generateMermaidMd(
 
   classAnotations = "";
   let result = "\nclassDiagram\n\n";
+
+  //styles
+
   program.stmts.forEach((stmt) => {
     if (stmt.packageDeclaration) {
       result += "namespace " + stmt.packageDeclaration.name + "{\n\n";
@@ -57,8 +62,14 @@ export function generateMermaidMd(
 
       let classesArray = packageDef?.classes;
 
+      let interfacesArray = packageDef.interfaces;
+
       classesArray?.forEach((element) => {
         result += evalClassDefinition(element);
+      });
+
+      interfacesArray.forEach((x) => {
+        result += evalInterfaceDefinition(x);
       });
 
       result += "}\n";
@@ -75,12 +86,22 @@ export function generateMermaidMd(
         }
         if (x.$type === ClassDef) result += evalClassDefinition(x);
         if (x.$type === RelationDefinition) result += evalRelationDefinition(x);
+        if (x.$type === Interface) result += evalInterfaceDefinition(x);
       }
     }
   });
 
   result += classAnotations;
+  result += classImplements;
+
+  result += "%% ==============================================\n";
+  result += "%% This block is just for styling the classes\n\n";
+  result += "classDef interface stroke:#000,stroke-dasharray: 5 5\n\n";
+  result += "%% ==============================================\n";
   fs.writeFileSync(generatedFilePath, result);
+
+  classAnotations = "";
+  classImplements = "";
   return result;
 }
 
@@ -110,7 +131,7 @@ function evalClassDefinition(classDef: ClassDef): string {
       const cs = constraints
         .map((c) => {
           if (c.value === undefined) return `${c.name}`;
-          return `${c.name}=${c.value}`;
+          return `${c.name} ${c.operator ?? "="} ${c.value}`;
         })
         .join(", ");
       result += ` #123; ${cs} #125;\n`;
@@ -128,6 +149,25 @@ function evalClassDefinition(classDef: ClassDef): string {
     result += "(" + mtd.parameters.join(", ") + ")\n";
   });
   result += "}\n";
+
+  if (classDef.implements) {
+    classImplements += `${classDef.implements.$refText}  <|-- ${classDef.name}\n`;
+  }
+  return result;
+}
+
+function evalInterfaceDefinition(interfaceDef: Interface): string {
+  let result = "";
+  result += `class ${interfaceDef.name}:::interface`;
+
+  if (interfaceDef.methods.length > 0) {
+    result += "{\n";
+    interfaceDef.methods?.forEach((mtd) => {
+      result += `${mtd.type.typeName.$refText} : ${mtd.name} `;
+      result += "(" + mtd.parameters.join(", ") + ")\n";
+    });
+    result += "}\n";
+  }
   return result;
 }
 
@@ -149,7 +189,7 @@ function evalRelationDefinition(association: RelationDefinition): string {
       case "Composition":
         relationConnector = "*--";
         break;
-      case "Agregation":
+      case "Aggregation":
         relationConnector = "o--";
         break;
       case "Association":
@@ -166,12 +206,14 @@ function evalRelationDefinition(association: RelationDefinition): string {
       let cardinalityFrom =
         x.cardinalityFrom === undefined
           ? ""
-          : x.cardinalityFrom.replace("[", '"').replace("]", '"');
+          : x.cardinalityFrom.$cstNode?.text
+              .replace("[", '"')
+              .replace("]", '"');
 
       let cardinalityTo =
         x.cardinalityTo === undefined
           ? ""
-          : x.cardinalityTo.replace("[", '"').replace("]", '"');
+          : x.cardinalityTo.$cstNode?.text.replace("[", '"').replace("]", '"');
 
       result += `${x.to.type.$refText} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from.type.$refText} `;
 
