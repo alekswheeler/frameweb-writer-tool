@@ -1,51 +1,14 @@
-import Person, Address from "./medical-core.fwt";
+// import Person, Address, Employee from "./medical-core.fwt";
 
-@domain
-Package HospitalStaff {
-    Class Employee {
-        employeeId: string,
-        hireDate: string,
-        salary: number,
-        workAddress: Address,
-    }
-    
-    @persistent
-    Class Doctor {
-        licenseNumber: string,
-        specialization: string,
-        yearsOfExperience: number,
-    }
-    
-    Class Nurse {
-        certificationLevel: string,
-        department: string,
-    }
-    
-    @transient
-    Class Administrator {
-        accessLevel: string,
-        department: string,
-    }
+// package HospitalStaff {
 
     
-    Inheritance {
-        Doctor extends Employee
-    }
+//     class Doctor {
+//         licenseNumber: string,
+//         specialization: string,
+//         yearsOfExperience: number,
+//     }
     
-    Inheritance {
-        Nurse extends Person
-    }
-    
-    Inheritance {
-        Nurse -> Employee
-    }
-    
-    Inheritance {
-        Administrator -> Person
-    }
-    
-    Inheritance {
-        Administrator -> Employee
-    }
-}
+//     class Nurse extends Employee {}
+// }
 

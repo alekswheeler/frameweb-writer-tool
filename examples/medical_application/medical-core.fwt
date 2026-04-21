@@ -1,6 +1,6 @@
 @domain
-Package MedicalCore {
-    Class Person {
+package MedicalCore {
+    class Person {
         firstName: string,
         lastName: string,
         birthDate: string,
@@ -8,16 +8,23 @@ Package MedicalCore {
         @id socialSecurityNumber: string {notnull},
     }
     
-    Class Address {
+    class Address {
         street: string,
         city: string,
         state: string,
         zipCode: string,
     }
     
-    Class MedicalRecord {
+    class MedicalRecord {
         @id recordId: number {notnull},
         createdDate: string,
         lastUpdated: string,
     }
+
+    // class Employee {
+    //     employeeId: string,
+    //     hireDate: string,
+    //     salary: number,
+    //     workAddress: Address,
+    // }
 }

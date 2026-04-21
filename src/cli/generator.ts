@@ -119,8 +119,8 @@ function evalClassDefinition(classDef: ClassDef): string {
     let attribute = att.type;
     let stereotype = "";
 
-    if (att.steriotype) {
-      stereotype = `<< ${att.steriotype} >>`;
+    if (att.stereotype) {
+      stereotype = `<< ${att.stereotype} >>`;
     }
 
     result += `${stereotype} ${att.type.typeName.$refText} : ${att.name} `;
