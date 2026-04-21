@@ -11,6 +11,7 @@ import {
   isPage,
   isRelationDefinition,
   Program,
+  isInterface,
 } from "./generated/ast.js";
 import chalk from "chalk";
 
@@ -77,6 +78,10 @@ export class FrameWebScopeComputation extends DefaultScopeComputation {
               this.createDescription(stmt.model, stmt.model.name),
             );
           } else if (isRelationDefinition(stmt.model) && stmt.model.name) {
+            descriptions.push(
+              this.createDescription(stmt.model, stmt.model.name),
+            );
+          } else if (isInterface(stmt.model)) {
             descriptions.push(
               this.createDescription(stmt.model, stmt.model.name),
             );

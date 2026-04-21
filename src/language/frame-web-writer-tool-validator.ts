@@ -202,7 +202,7 @@ export class FrameWebWriterToolValidator {
     if (packageDef.pType && packageDef.pType === "persistence") {
       const classes = packageDef.classes;
       classes.forEach((x) => {
-        if (!x.implements) {
+        if (x.interfaces.length < 1) {
           accept(
             "info",
             `FrameWeb indicates the use of the DAO design pattern. It is recommended to create an interface named ${x.name}DAO`,
@@ -218,7 +218,7 @@ export class FrameWebWriterToolValidator {
     if (packageDef.pType && packageDef.pType === "service") {
       const classes = packageDef.classes;
       classes.forEach((x) => {
-        if (!x.implements) {
+        if (x.interfaces.length < 1) {
           accept(
             "info",
             `FrameWeb indicates the use of interfaces for service classes. It is recommended that ${x.name} implements an interface.`,

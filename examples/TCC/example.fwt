@@ -1,0 +1,18 @@
+import Nurse from "./medical-core.fwt";
+
+package HospitalStaff {
+    
+    class Employee {
+        employeeId: string,
+        hireDate: string,
+        salary: number,
+        workAddress: Address,
+    }
+    
+    class Doctor {
+        licenseNumber: string,
+        specialization: string,
+        yearsOfExperience: number,
+    }
+}
+

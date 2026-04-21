@@ -1,20 +1,20 @@
 //https://drive.google.com/file/d/1TWK3KZAbr9UQJ0FremKqXpbRhFnvmG-R/view
 @domain
-Package MyPackage {
+package MyPackage {
 
-	Class Grade {
+	class Grade {
 		value: number,
 	}
 
-	Class Student {
-		name: string {collum=full_name},
+	class Student {
+		// name: string {collum=full_name},
 		email: string {size=100},
 		password: string,
 	}
 	
-	Class ReviewDecision {}
+	class ReviewDecision {}
 	
-	Class Review {
+	class Review {
 		text: string, 
 		decision: ReviewDecision,
 		@transient pending: bool,
@@ -22,23 +22,24 @@ Package MyPackage {
 		operation1(text, review): string, 
 	}
 
-	Class Workshop { 
-		submissionDeadLine: string {precision=Date},
-		reviewDeadLine: string {precision=Date},
+	class Workshop { 
+		submissionDeadLine: string {precision=date},
+		reviewDeadLine: string {precision=date},
 	}
 
-	Class GradedWorkshop {	}
+	// class GradedWorkshop extends Workshop {	}
+	class GradedWorkshop extends Workshop {}
 
-	Class CompetitionWorkshop { }
+	class CompetitionWorkshop { }
 
 	@transient
-	Class Statistics {
+	class Statistics {
 		submissions: number,
 		totalReviews: number,
 		pendingReviews: number,
 	}
 
-	Class Submission { 
+	class Submission { 
 		ttile: string,
 		keyword: string,
 		abstract: string,
@@ -48,7 +49,7 @@ Package MyPackage {
 
     // RELATIONS
 
-	Association {
+	association {
 		//todo: podia verificar esse ciclo
 		Student [*] -> [*] Workshop //todo: é apenas link
 		// Workshop [*] -> [*] Student
@@ -57,14 +58,11 @@ Package MyPackage {
 		Workshop [1] -> [*] Submission //todo: é apenas link
 	}
 
-	Association { 
+	association { 
 		CompetitionWorkshop [*] -> [*] Student //ok
 		Submission [*] -> Student //ok
 		Workshop [1] -> [0..1] Statistics // ok
 		Review [*] -> [1] Student // ok
 		Grade [*] -> [1] Student // ok
 	}
-
-	Inheritance {  GradedWorkshop -> Workshop } //ok
-	Inheritance {  CompetitionWorkshop -> Workshop } //ok
 }
