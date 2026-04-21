@@ -1,0 +1,24 @@
+class A {}
+class B {}
+class C {}
+class D {}
+class E {}
+class F {}
+class G {}
+class H {}
+
+association associacao {
+	A [1] -> [*] B
+}
+
+aggregation agregacao {
+	C [m] -> [1..n] D
+}
+
+composition composicao{
+	E [*] -> [*] F
+}
+
+dependency dependencia {
+	G -> H
+}

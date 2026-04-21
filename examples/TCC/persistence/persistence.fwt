@@ -1,19 +1,14 @@
-//https://drive.google.com/file/d/1TWK3KZAbr9UQJ0FremKqXpbRhFnvmG-R/view
-Package MyPackage {
-	//dao interface
-	Class GradeRepository {}
+@persistence
+package oldenburg.core.persistence_ {
 
-	Class GradeRepositoryImpl {}
-
-
-	//dao interface
-
-	Class ViewRepository {}
-
-	Class ViewRepositoryImpl {}
-
-	Inheritance { ViewRepositoryImpl -> ViewRepository }
-
-	Inheritance { GradeRepositoryImpl -> GradeRepository }
-
+	interface GradeRepositoryDAO {}
+	interface ReviewRepositoryDAO {}
+	interface StudentRepositoryDAO {}
+	interface SubmissionRepositoryDAO {}
+	interface WorkshopRepositoryDAO {}
+	class GradeRepository implements GradeRepositoryDAO {}
+	class ReviewRepository implements ReviewRepositoryDAO {}
+	class StudentRepository implements StudentRepositoryDAO{}
+	class SubmissionRepository implements SubmissionRepositoryDAO {}
+	class WorkshopRepository implements WorkshopRepositoryDAO {}
 }

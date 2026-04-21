@@ -22,31 +22,36 @@ PackageType returns string:
 
 PackageDeclaration:
     ('@' pType=PackageType)?
-    'Package' name=QualifiedName '{'
-        (classes+=ClassDef | relations+=RelationDefinition)*
+    'package' name=QualifiedName '{'
+        (classes+=ClassDef | relations+=RelationDefinition | interfaces+=Interface)*
     '}';
 
-ClassSteriotype returns string:
-    'transient' | 'mapped'| 'persistent' // Entity Model
-    | 'page' | 'template' | 'form' | 'binary' // View Model
+ClassStereotype returns string:
+    'transient' | 'mapped'| 'persistent'
+    | 'page' | 'form' | 'binary'
 ;
 
-AttributeSteriotype returns string:
-    'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
+AttributeStereotype returns string:
+    'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embedded';
 
 Model:
-    (Page | ClassDef | RelationDefinition);
+    (Page | ClassDef | RelationDefinition | Interface);
 
 Page:
-    'Page' name=ID;
+    'page' name=ID;
 
-// todo: table=name
 ClassDef:
-    ('@' stereotype=ClassSteriotype)?
-    'Class' name=ID '{' attributes+=Attribute* methods+=Method* '}';
+    ('@' stereotype=ClassStereotype)?
+    'class' name=ID 
+    ('extends' superClass=[ClassDef:ID])?
+    ('implements' interfaces+=[Interface:ID] (',' interfaces+=[Interface:ID])*)?
+    '{' attributes+=Attribute* methods+=Method* '}' ;
+
+Interface:
+    'interface' name=ID ('extends' implements=[ClassDef: ID] )? '{' methods+=Method* '}' ;
 
 Attribute:
-    ('@' steriotype=AttributeSteriotype)?
+    ('@' stereotype=AttributeStereotype)?
     name=ID ':'
     type=TypeRef ( '{' constraints+=AttributeConstraint (',' constraints+=AttributeConstraint)* '}')? ',';
 
@@ -61,51 +66,44 @@ TypeRef:
 RelationDefinition: 
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
-    '}' | 
-    'Inheritance' '{' 
-        block=InheritanceRelationBlock?
     '}';
 
 RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=CustomType 
+	from=CustomType
     cardinalityFrom=Cardinality?
     ('->' | '--') 
     cardinalityTo=Cardinality?
-    to=CustomType 
+    to=CustomType
     ;
 
-Cardinality returns string:
-    (('[' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') ']') | ('[' (INT|'*'|'n'|'m') ']'))
+Cardinality:
+    (('[' start=(INT|'*'|'n'|'m') '..' end=(INT|'*'|'n'|'m') ']') | ('[' self=(INT|'*'|'n'|'m') ']'))
     ;
-
-InheritanceRelation:
-	from=CustomType 
-    ('->' | 'extends') 
-    to=CustomType 
-    ;
-
-InheritanceRelationBlock: 
-    (relations+=InheritanceRelation)+;    
 
 RelationType:
-    associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
+    associationType=('association' | 'aggregation' | 'composition' | 'dependency');
 
 CustomType:
     type=[ClassDef : QualifiedName];
 
 AttributeConstraint:
-    name=ID ('=' value=(ID | INT | STRING))?;
+    name = 'size' '=' value=INT
+    | name = 'precision' '=' value = ('date' | 'time' | 'timestamp')
+    | name = 'generation' '=' value=('auto'|'identity'|'none'|'sequence')
+    | name='nullabe'
+    | name = 'column' '=' value=ID
+    | name=ID (operator=('='|'>='|'<='|'>'|'<'|'!=') value=ID)?
+    ;
 
 QualifiedName returns string:
     ID ('.' ID)*;
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
-terminal INT returns number: /[0-9]+/;
+terminal INT returns string: /[0-9]+/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
-
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;

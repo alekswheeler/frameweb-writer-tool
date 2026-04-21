@@ -1,12 +1,12 @@
 //https://nemo.inf.ufes.br/wp-content/papercite-data/pdf/hoppe-et-al-webmedia23.pdf
 @view
-Package Form_Navigation {
+package Form_Navigation {
 
 	@page
-	Class Index{ }
+	class Index{ }
 
 	@form
-	Class RegistrationForm {
+	class RegistrationForm {
 		name: string,
 		email: string,
 		password: string,
@@ -14,35 +14,34 @@ Package Form_Navigation {
 	}
 
 	@page
-	Class Succes { name: string, }
+	class Succes { name: string, }
 
-	@page Class EmailInUse { email: string, }
+	@page class EmailInUse { email: string, }
 
-	Composition {
+	composition {
 		RegistrationForm -> Index
 	}
 }
 
-Package Controller {
-	Class Author {
+package Controller {
+	class Author {
 		name: string,
 		email: string,
 		password: string,
 	}
 
-	Class RegistrationController {
+	class RegistrationController {
 		author: Author,
 		repeatPassword: string,
 		register(): string,
 	}
 }
 
-Association depends {
+dependency {
 	RegistrationForm ->	RegistrationController 
 }
 
-
-Association depends {
+dependency {
 	RegistrationController -> Succes
 	RegistrationController -> EmailInUse 
 }
