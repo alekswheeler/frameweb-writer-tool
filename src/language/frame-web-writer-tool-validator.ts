@@ -1,9 +1,21 @@
-import { type ValidationAcceptor, type ValidationChecks } from "langium";
+import {
+  AstUtils,
+  isAstNode,
+  type ValidationAcceptor,
+  type ValidationChecks,
+} from "langium";
 import {
   Attribute,
+  Cardinality,
   ClassDef,
+  FileImport,
   FrameWebWriterToolAstType,
+  ImportSpec,
+  isImportSpec,
   PackageDeclaration,
+  Relation,
+  RelationDefinition,
+  RelationType,
 } from "./generated/ast.js";
 import type { FrameWebWriterToolServices } from "./frame-web-writer-tool-module.js";
 
@@ -15,8 +27,12 @@ export function registerValidationChecks(services: FrameWebWriterToolServices) {
   const validator = services.validation.FrameWebWriterToolValidator;
   const checks: ValidationChecks<FrameWebWriterToolAstType> = {
     ClassDef: [validator.checkClassStartsWithCapital],
-    PackageDeclaration: [validator.checkClassStereotype],
+    PackageDeclaration: [
+      validator.checkClassStereotype,
+      validator.validateDaoInterface,
+    ],
     Attribute: [validator.checkCustomType],
+    Relation: [validator.validateCardinality],
   };
   registry.register(checks, validator);
 }
@@ -50,7 +66,7 @@ export class FrameWebWriterToolValidator {
     accept: ValidationAcceptor,
   ): void {
     let domainStereotype = ["transient", "mapped", "persistent"];
-    let viewStereotype = ["page", "template", "form", "binary"];
+    let viewStereotype = ["page", "form", "binary"];
     if (packageDef.pType) {
       let pClasses = packageDef.classes;
       pClasses.forEach((pClass) => {
@@ -75,7 +91,7 @@ export class FrameWebWriterToolValidator {
             case "controller":
             case "service":
             case "persistence":
-              if (!viewStereotype.includes(pClass.stereotype)) {
+              if (viewStereotype.includes(pClass.stereotype)) {
                 accept("error", "Invalid stereotype.", {
                   node: pClass,
                   property: "stereotype",
@@ -120,6 +136,99 @@ export class FrameWebWriterToolValidator {
       }
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  private isValidTokenCardinality(token: string): boolean {
+    var validTokens = ["*", "n", "m"];
+    return validTokens.includes(token);
+  }
+
+  //todo: passar o property
+  private checkCardinalityProperty(
+    token: string,
+    node: Relation,
+    accept: Function,
+  ) {
+    let parsedToken = Number.parseFloat(token);
+    if (!this.isValidTokenCardinality(token)) {
+      if (!Number.isInteger(parsedToken) || parsedToken < 0) {
+        accept("error", "Multiplicity of relations must be positive integer.", {
+          node,
+        });
+      }
+    }
+  }
+
+  validateCardinality(relation: Relation, accept: ValidationAcceptor): void {
+    let token: string | undefined;
+    let parsedToken: number;
+
+    if (relation.cardinalityFrom) {
+      token = relation.cardinalityFrom.self?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityFrom.end?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityFrom.start?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+    }
+
+    if (relation.cardinalityTo) {
+      token = relation.cardinalityTo.self?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityTo.end?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+      token = relation.cardinalityTo.start?.toString();
+      if (token) {
+        this.checkCardinalityProperty(token, relation, accept);
+      }
+    }
+  }
+
+  validateDaoInterface(
+    packageDef: PackageDeclaration,
+    accept: ValidationAcceptor,
+  ): void {
+    if (packageDef.pType && packageDef.pType === "persistence") {
+      const classes = packageDef.classes;
+      classes.forEach((x) => {
+        if (!x.implements) {
+          accept(
+            "info",
+            `FrameWeb indicates the use of the DAO design pattern. It is recommended to create an interface named ${x.name}DAO`,
+            {
+              node: x,
+              property: "name",
+            },
+          );
+        }
+      });
+    }
+
+    if (packageDef.pType && packageDef.pType === "service") {
+      const classes = packageDef.classes;
+      classes.forEach((x) => {
+        if (!x.implements) {
+          accept(
+            "info",
+            `FrameWeb indicates the use of interfaces for service classes. It is recommended that ${x.name} implements an interface.`,
+            {
+              node: x,
+              property: "name",
+            },
+          );
+        }
+      });
     }
   }
 }

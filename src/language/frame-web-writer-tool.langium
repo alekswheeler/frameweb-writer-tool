@@ -23,19 +23,19 @@ PackageType returns string:
 PackageDeclaration:
     ('@' pType=PackageType)?
     'Package' name=QualifiedName '{'
-        (classes+=ClassDef | relations+=RelationDefinition)*
+        (classes+=ClassDef | relations+=RelationDefinition | interfaces+=Interface)*
     '}';
 
 ClassSteriotype returns string:
     'transient' | 'mapped'| 'persistent' // Entity Model
-    | 'page' | 'template' | 'form' | 'binary' // View Model
+    | 'page' | 'form' | 'binary' // View Model
 ;
 
 AttributeSteriotype returns string:
     'transient' | 'id' |'persistent' | 'version' | 'lob' | 'embededd';
 
 Model:
-    (Page | ClassDef | RelationDefinition);
+    (Page | ClassDef | RelationDefinition | Interface);
 
 Page:
     'Page' name=ID;
@@ -43,7 +43,10 @@ Page:
 // todo: table=name
 ClassDef:
     ('@' stereotype=ClassSteriotype)?
-    'Class' name=ID '{' attributes+=Attribute* methods+=Method* '}';
+    'Class' name=ID ('implements' implements=[Interface: ID])? '{' attributes+=Attribute* methods+=Method* '}' ;
+
+Interface:
+    'Interface' name=ID '{' methods+=Method* '}' ;
 
 Attribute:
     ('@' steriotype=AttributeSteriotype)?
@@ -62,7 +65,7 @@ RelationDefinition:
     relationType=RelationType name=ID? '{' 
         block=RelationBlock? 
     '}' | 
-    'Inheritance' '{' 
+    inheritance=('Inheritance') '{' 
         block=InheritanceRelationBlock?
     '}';
 
@@ -70,42 +73,50 @@ RelationBlock:
     (relations+=Relation)+;
 
 Relation: 
-	from=CustomType 
+	from=CustomType
     cardinalityFrom=Cardinality?
     ('->' | '--') 
     cardinalityTo=Cardinality?
-    to=CustomType 
+    to=CustomType
     ;
 
-Cardinality returns string:
-    (('[' (INT|'*'|'n'|'m') '..' (INT|'*'|'n'|'m') ']') | ('[' (INT|'*'|'n'|'m') ']'))
+Cardinality:
+    (('[' start=(DECIMAL|'*'|'n'|'m') '..' end=(DECIMAL|'*'|'n'|'m') ']') | ('[' self=(DECIMAL|'*'|'n'|'m') ']'))
     ;
 
 InheritanceRelation:
-	from=CustomType 
+	from=CustomType
     ('->' | 'extends') 
-    to=CustomType 
+    to=CustomType
     ;
 
 InheritanceRelationBlock: 
     (relations+=InheritanceRelation)+;    
 
 RelationType:
-    associationType=('Association' | 'Agregation' | 'Composition' | 'Dependency');
+    associationType=('Association' | 'Aggregation' | 'Composition' | 'Dependency');
 
 CustomType:
     type=[ClassDef : QualifiedName];
 
 AttributeConstraint:
-    name=ID ('=' value=(ID | INT | STRING))?;
+    name=(ID|'size') ( operator=('='|'>='|'<='|'>'|'<'|'!=') value=(DECIMAL))?
+    | name = 'precision' '=' value = ('date' | 'time' | 'timestamp')
+    | name = 'generation' '=' value=('auto'|'identity'|'none'|'sequence')
+    | name = 'notnull' | name='nullabe'
+    | name = 'column' '=' value=ID
+    ;
 
 QualifiedName returns string:
     ID ('.' ID)*;
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
-terminal INT returns number: /[0-9]+/;
+// terminal INT returns string: /[0-9]+/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
+// terminal DECIMAL returns number: /('-'?[0-9]+(?:\.[0-9]*)?)/;
+terminal DECIMAL returns number: /[+-]?[0-9]+(\.[0-9]+)?/;
+
 
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
