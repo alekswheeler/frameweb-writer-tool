@@ -150,9 +150,14 @@ function evalClassDefinition(classDef: ClassDef): string {
   });
   result += "}\n";
 
-  if (classDef.implements) {
-    classImplements += `${classDef.implements.$refText}  <|-- ${classDef.name}\n`;
+  classDef.interfaces?.forEach((x) => {
+    classImplements += `${x.$refText}  <|-- ${classDef.name}\n`;
+  });
+
+  if (classDef.superClass) {
+    classImplements += `${classDef.superClass.$refText}  <|-- ${classDef.name}\n`;
   }
+
   return result;
 }
 
@@ -168,7 +173,7 @@ function evalInterfaceDefinition(interfaceDef: Interface): string {
     });
     result += "}\n";
   }
-  return result;
+  return (result += "\n\n");
 }
 
 function evalRelationDefinition(association: RelationDefinition): string {
@@ -186,16 +191,16 @@ function evalRelationDefinition(association: RelationDefinition): string {
     let relationConnector = "";
 
     switch (relationTypeName) {
-      case "Composition":
+      case "composition":
         relationConnector = "*--";
         break;
-      case "Aggregation":
+      case "aggregation":
         relationConnector = "o--";
         break;
-      case "Association":
+      case "association":
         relationConnector = "<--";
         break;
-      case "Dependency":
+      case "dependency":
         relationConnector = "<..";
         break;
       default:
@@ -215,7 +220,13 @@ function evalRelationDefinition(association: RelationDefinition): string {
           ? ""
           : x.cardinalityTo.$cstNode?.text.replace("[", '"').replace("]", '"');
 
-      result += `${x.to.type.$refText} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from.type.$refText} `;
+      if (relation.relationType.associationType === "composition") {
+        result += `\n\n${x.to.type.$refText} ${cardinalityTo} <--* ${cardinalityFrom} ${x.from.type.$refText} `;
+      } else if (relation.relationType.associationType === "aggregation") {
+        result += `\n\n${x.to.type.$refText} ${cardinalityTo} <--o  ${cardinalityFrom} ${x.from.type.$refText} `;
+      } else {
+        result += `\n\n${x.to.type.$refText} ${cardinalityTo} ${relationConnector} ${cardinalityFrom} ${x.from.type.$refText} `;
+      }
 
       if (relationName !== undefined) result += ` : ${relationName} \n`;
       else result += "\n";
